@@ -1031,7 +1031,7 @@ function deco2Draw(now){if(!DATL.complete||!DATL.naturalWidth)return;const C=CEL
   const one=(d,cx,by,wc)=>{const r=DATR[d.k];if(!r)return;const w=C*wc*Math.min(1,1.35*r[2]/r[3]/1.4),h=w*r[3]/r[2];
     gshadow(cx,by-h*.08,w*.46,w*.1);ctx.save();ctx.translate(cx,by);if(d.fl)ctx.scale(-1,1);if(DSWAY[d.k]){const a=Math.sin(now/900+d.ph)*.05+Math.sin(now/370+d.ph*2)*.015;ctx.transform(1,0,a,1,0,0);}datl(d.k,-w/2,-h,w,h);ctx.restore();};
   for(const d of DECO2)one(d,d.x*C,(d.y+.17)*C,.65);
-  if(XL>.55){const ks=[1,2,3,4,5].map(i=>'d-'+mapKey+'-'+i);for(let i=0;i<4;i++){const sd=i%2?1:-1,rr=2+i*2.3;one({k:ks[(i+2)%5],fl:sd>0,ph:i},sd<0?-XL*C*.5:(COLS+XL*.5)*C,rr*C,Math.min(1.1,XL*.85)*.6);}}}
+  if(XL>.55){const ks=[1,2,3,4,5].map(i=>'d-'+mapKey+'-'+i);for(let i=0;i<4;i++){const sd=i%2?1:-1,rr=i===1?2:2+i*2.3;/* o'ngdagi kuch tugmalari ostida qolmasin */one({k:ks[(i+2)%5],fl:sd>0,ph:i},sd<0?-XL*C*.5:(COLS+XL*.5)*C,rr*C,Math.min(1.1,XL*.85)*.6);}}}
 // shahar havosi: Qo'qon/Xiva shamol, Buxoro qum shamoli, Samarqand tuman
 const AMBC={qoqon:[['a-shamol',.5,0,2.2,.45,1.6],['a-barg1',.9,1,.42,.5,.5],['a-barg2',.9,1,.42,.4,.5],['a-gul1',.9,1,.36,.6,.5],['a-gul2',.9,1,.3,.6,.5]],
   xiva:[['a-qum1',.5,0,4.6,.5,1.3],['a-shamol',.42,0,2,.4,1.6],['a-yulgun',1,2,.62,.12,.85]],
