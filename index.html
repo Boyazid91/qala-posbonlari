@@ -2060,7 +2060,7 @@ function endGame(win){runClear();$('ovPw').classList.add('hide');music('menu');S
 
 // ---- Musiqa ----
 const MUS={},MVOL={menu:.55,game:.38,yalmogiz:.5,devbek:.5,ajdarho:.5,ajdarho2:.5,ajina:.5,shohmoron:.5,qoraqush:.5,kjin:.5,chshoh:.5,loyp:.5,boribek:.5,malika:.5};let mCur=null,mWant='menu',mStarted=false;
-function mEl(k){if(!MUS[k]){const a=new Audio('music/'+k+'.mp3');a.loop=true;a.preload=k==='menu'?'auto':'none';a._v=0;a.volume=0;MUS[k]=a;mGraph(a);}return MUS[k];}
+function mEl(k){if(!MUS[k]){const a=new Audio('music/'+k+'.mp3?v=274');a.loop=true;a.preload=k==='menu'?'auto':'none';a._v=0;a.volume=0;MUS[k]=a;mGraph(a);}return MUS[k];}
 // iOS Safari'da audio.volume ishlamaydi: ovoz balandligini Web Audio GainNode orqali boshqaramiz
 function mGraph(a){try{if(a._g||!AC)return;const src=AC.createMediaElementSource(a),g=AC.createGain();g.gain.value=a._v||0;src.connect(g);g.connect(AC.destination);a._g=g;a.volume=1;}catch(e){}}
 function mSetV(a,v){a._v=v;if(a._g){a._g.gain.value=v;}else{try{a.volume=v;}catch(e){}}}
