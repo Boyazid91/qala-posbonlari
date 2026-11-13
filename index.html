@@ -2094,10 +2094,13 @@ $('cGo').onclick=()=>{if(cPick<0)return;unlock();sfx('tap');city=cPick;master=CI
 function applyMaster(){const MM=MASTERS[master];document.documentElement.style.setProperty('--mcol',MM.col);document.documentElement.style.setProperty('--mglow',MM.col+'99');S.amb=[];banner((IMG['ustoz-'+master]?'<img class="bp" src="img/ustoz-'+master+'.png">':'')+MM.e+' '+MM.n+' siz bilan!','Darvoza yopildi! '+CITIES[city].n+'ni dushmandan himoya qil!');}
 $('bAgain').onclick=()=>{music('menu');$('ovEnd').classList.add('hide');if(S&&S.ruin){startGame();return;}openCity();};
 // g'alaba muhri videosi: har shahar g'alabasidan keyin darvozaning bir qismi tiklanadi
-function sealPre(j){const v=$('svVid');if(!v)return;v.preload='auto';v.src=j==='ending'?'video/final.mp4':'video/muhr-'+(typeof j==='string'?j:CITIES[j].k)+'.mp4';try{v.load();}catch(e){}}
+/* v289: yakuniy video oldindan to'liq yuklanadi (blob), shunda o'ynaganda qotmaydi */let FINB=null,FINL=0;function finPre(){if(FINB||FINL)return;FINL=1;fetch('video/final.mp4').then(r=>{if(!r.ok)throw 0;return r.blob();}).then(b=>{FINB=URL.createObjectURL(b);}).catch(()=>{FINL=0;});}
+function sealPre(j){const v=$('svVid');if(!v)return;v.preload='auto';v.src=j==='ending'?(FINB||'video/final.mp4'):'video/muhr-'+(typeof j==='string'?j:CITIES[j].k)+'.mp4';try{v.load();}catch(e){}}
+window.__fin={pre:()=>finPre(),play:(cb)=>sealVideo('ending',cb),get b(){return FINB},on:()=>SVON()};
+function SVON(){const w=$('sealV');return !!(w&&w.classList.contains('on'));}
 function sealVideo(j,cb){const w=$('sealV'),v=$('svVid');if(!w||!v){cb();return;}let done=false;const a=mCur&&MUS[mCur];
   const fin=()=>{if(done)return;done=true;try{v.pause();}catch(e){}w.classList.remove('on');if(a&&musicOn){const p=a.play();if(p&&p.catch)p.catch(()=>{});}cb();};
-  {const kk=typeof j==='string'?j:CITIES[j].k;if(!v.src||v.src.indexOf('muhr-'+kk+'.mp4')<0)sealPre(j);}if(a)try{a.pause();}catch(e){}
+  {const kk=typeof j==='string'?j:CITIES[j].k;if(j==='ending'){if(!FINB)finPre();sealPre(j);}else if(!v.src||v.src.indexOf('muhr-'+kk+'.mp4')<0)sealPre(j);}if(a)try{a.pause();}catch(e){}
   w.classList.add('on');try{v.currentTime=0;}catch(e){}v.muted=!soundOn&&!musicOn;const p=v.play();if(p&&p.catch)p.catch(()=>{v.muted=true;v.play().catch(fin);});
   v.onended=fin;v.onerror=fin;$('svSkip').onclick=ev=>{ev.stopPropagation();fin();};}
 // ---- Jangni saqlash: har to'lqindan keyin (telefon ilovani yopsa ham davom etadi) ----
@@ -2114,7 +2117,7 @@ function runLoad(){const R=runGet();if(!R){openCity();return;}diff=R.diff;city=R
 function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null;}}
 function showBest(){const b=+(store('qp_best_'+diff)||0);$('best').textContent=b?DIFF[diff].n+' rejimdagi eng yaxshi natija: '+'⭐'.repeat(b):'';glyphify($('best'),0,11.5,1);}
 function endGame(win){runClear();$('ovPw').classList.add('hide');music('menu');S.state='end';if(!win){S.ruin=S.ruin||'ruin';S.dark=Math.max(S.dark,.26);S.nightOn=true;document.body.classList.add('night');}heroMode=false;hideSheet();const ratio=S.lives/S.maxLives;const stars=win?(ratio>=.9?3:ratio>=.5?2:1):0;
-  if(win){const b=+(store('qp_best_'+diff)||0);if(stars>b)store('qp_best_'+diff,String(stars));const ck='qp_cst_'+CITIES[city].k;if(stars>+(store(ck)||0))store(ck,String(stars));if(city>=cProg()){store('qp_prog',String(city+1));cJust=city;sealPre(city);}}
+  if(win){const b=+(store('qp_best_'+diff)||0);if(stars>b)store('qp_best_'+diff,String(stars));const ck='qp_cst_'+CITIES[city].k;if(stars>+(store(ck)||0))store(ck,String(stars));if(city>=cProg()){store('qp_prog',String(city+1));cJust=city;sealPre(city);if(city===3)finPre();}}
   {const es=$('endSeal');es.classList.toggle('show',!!win);if(win)es.src='img/emblem-'+CITIES[city].m+'.png';}$('bAgain').textContent=win?'Xaritaga ▶':'Qayta urinish ▶';
   $('endHero').innerHTML=win?'<img src="img/hero-portrait.png" alt=""><img src="'+gateSrc('')+'" alt="">':(S.ruin==='fire'?'<img src="img/foe-ajdarho.png" alt=""><img src="'+gateSrc('-fire')+'" alt="">':'<img src="img/foe-dev.png" alt=""><img src="'+gateSrc('-ruin')+'" alt="">');$('endHero').classList.add('mh');$('endTitle').textContent=win?CITIES[city].n+' omon!':'Darvoza qulab tushdi';
   $('endStars').textContent=win?'⭐'.repeat(stars)+'☆'.repeat(3-stars):'';
@@ -2201,7 +2204,7 @@ window.__ed=()=>({EDR,C:CELL,XL,TOP,XT,LAY,paused});
 $('sEdit').onclick=()=>{sfx('tap');if(!S||!DEV){return;}edToggle(true);};if(!DEV)$('sEdit').style.display='none';
 // sifat nazorati: telefon sekin bo'lsa tasvir aniqligini pasaytiradi, tez bo'lsa qaytaradi
 let QN=0,QS=0,QHI=0,QSKIP=3,QBAD=9,QSP=0;function qmon(ms){if(!S||paused||document.hidden||!(S.state==='wave'||S.state==='idle')||ms>300)return;QN++;QS+=ms;if(ms>45)QSP++;if(QN<60)return;const avg=QS/QN,spk=QSP;QN=QS=QSP=0;if(QSKIP>0){QSKIP--;return;}const mx=Math.min(window.devicePixelRatio||1,2);let nq=null;if((avg>24||spk>=5)&&DPR>1){QBAD=Math.min(QBAD,DPR);nq=Math.max(1,DPR-(avg>45?.5:.25));QHI=0;}else if(avg<18.5&&DPR<mx&&DPR+.25<QBAD){if(++QHI>=8){nq=Math.min(mx,DPR+.25);QHI=0;}}else QHI=0;if(nq!=null){QCAP=nq;try{localStorage.setItem('qp_q',String(nq));}catch(e){}resize();QSKIP=2;}}
-function loop(now){sealTick();const dt=Math.min(.05,(now-last)/1000);qmon(now-last);last=now;if(!paused)for(let i=0;i<speed;i++)update(dt);draw(now);requestAnimationFrame(loop);}
+function loop(now){sealTick();const dt=Math.min(.05,(now-last)/1000);qmon(now-last);last=now;if(!paused)for(let i=0;i<speed;i++)update(dt);if(!SVON())draw(now);requestAnimationFrame(loop);}
 resize();showBest();requestAnimationFrame(loop);
 // offline rejim: faqat o'z saytida (Netlify / ilova) ishlaydi
 try{if('serviceWorker' in navigator&&location.protocol==='https:'&&!/claude|anthropic/.test(location.hostname))navigator.serviceWorker.register('sw.js').catch(()=>{});}catch(e){}
