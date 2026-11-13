@@ -910,7 +910,7 @@ const GATE={c:3,r:10.3};
 // ---- Ustozlar ----
 const MASTERS={
   olov:{e:'🔥',n:'Olov ustasi',d:"Kamon o'qlari va toshlar yonib uchadi: dushman 3 soniya kuyadi.",u:'bibi',burn:1,col:'#ff6a1a',bg:'#fff0e4',pc:['#ff7a1a','#ffd34d','#ff3d00'],amb:'ember'},
-  muz:{e:'❄️',n:'Muz ustasi',d:"Sekinlashtirish 30% kuchliroq, Muz burji 30% arzon.",u:'kalta',slowBoost:1,col:'#3fb6f2',bg:'#e8f6ff',pc:['#ffffff','#bfe9ff','#7fd3ff'],amb:'snow'},
+  muz:{e:'❄️',n:'Muz ustasi',d:"Muz burji dushmanni 35% sekinlashtiradi va 30% arzon.",u:'kalta',slowBoost:1,col:'#3fb6f2',bg:'#e8f6ff',pc:['#ffffff','#bfe9ff','#7fd3ff'],amb:'snow'},
   giyoh:{e:'🌿',n:'Giyoh ustasi',d:"Har zarba zahar qoldiradi. Zahar zirhga qaramaydi.",u:'zahar',poison:1,col:'#3fae45',bg:'#ecf8e6',pc:['#6fcf4f','#b5e86b','#9b5fd0'],amb:'leaf'},
   nur:{e:'☀️',n:'Nur ustasi',d:"Bosslarga +35% zarar, har o'ldirishdan +15% oltin.",u:'kalon',bossMul:1.35,gold:1.15,col:'#e8a800',bg:'#fff8dc',pc:['#ffe27a','#fff6c4','#ffc21a'],amb:'mote'}
 };
@@ -921,7 +921,7 @@ const TOWERS={
   kamon:{e:'🏹',n:'Kamonchi',cost:45,range:2,dmg:10,rate:.7,proj:'➶',kind:'phys',d:"Arzon, tez otadi. Har qanday dushmanga."},
   manjaniq:{e:'🪨',n:'Manjaniq',cost:80,range:2.3,dmg:22,rate:1.6,proj:'🪨',splash:1,kind:'phys',d:"Og'ir tosh otadi, to'dani yanchadi."},
   qozon:{e:'🔥',n:'Olovli qozon',cost:70,range:1.4,dmg:5,rate:.35,proj:'🔥',splash:.7,kind:'phys',d:"Yaqindagilarni yondiradi. Burilishga qo'y!"},
-  muz:{e:'❄️',n:'Muz burji',cost:55,range:1.9,dmg:3,rate:1,proj:'❄️',splash:.9,slow:.5,slowT:1.6,kind:'magic',d:"Dushmanni sekinlashtiradi."},
+  muz:{e:'❄️',n:'Muz burji',cost:55,range:1.9,dmg:3,rate:1,proj:'❄️',splash:.9,slow:.8,slowT:.8,kind:'magic',d:"Dushmanni sekinlashtiradi."},
   sehr:{e:'🔮',n:'Sehrgar',cost:110,range:2.2,dmg:28,rate:1.1,proj:'✨',kind:'magic',d:"Sehr zirhni teshadi. Devlarga qarshi!"},
   // afsonaviy (ustozga qarab)
   ajdar:{e:'🐲',n:'Ajdar minorasi',cost:320,range:2.4,dmg:30,rate:.9,proj:'🔥',splash:1.2,kind:'magic',burnX:2,ult:1,d:"Olov purkaydi, hamma kuyadi."},
@@ -1705,7 +1705,7 @@ function update(dt){if(!S)return;pwTick(dt);
     const burn=(M().burn&&(t.type==='kamon'||t.type==='manjaniq'))||T.burnX;
     const UP={ajdar:['fx-fire-'+(1+(Math.random()*3|0)),x-.35,y-1.05],pomir:['fx-fstream-'+(1+(Math.random()*2|0)),x,y-.45],zahar:[IMG['shot-zahar']?null:'fx-pstream',x,y-.35]}[t.type];
     S.shots.push({img:UP?UP[0]:null,x0:UP?UP[1]:x,x:UP?UP[1]:x,y:UP?UP[2]:(TCH[t.type]?y-.55:y),tgt:best,tx:bq.x,ty:bq.y,tt:t.type,e:T.proj,dmg:dmgOf(t),kind:T.kind,splash:T.splash?T.splash+.1*(t.lvl-1):0,
-      slow:T.slow?(M().slowBoost?T.slow*.7:T.slow):0,slowT:T.slowT,freeze:T.freeze,burn:burn?dmgOf(t)*.35*(T.burnX||1):0,
+      slow:T.slow?(M().slowBoost?.65:T.slow):0,slowT:T.slowT,freeze:T.freeze,burn:burn?dmgOf(t)*.35*(T.burnX||1):0,
       poison:(M().poison||T.poisonX)?dmgOf(t)*.3*(T.poisonX||1):0,tp:t.type,rot:0,sp:t.type==='kamon'?11:t.type==='manjaniq'?5:8,big:T.ult,arc:t.type==='manjaniq'?1:0,heavy:t.type==='manjaniq',trav:0});
     if(t.type==='ajdar'){const s=S.shots[S.shots.length-1];s.img=null;s.inv=1;s.x=s.x0=bq.x;s.y=bq.y;t.kick=.15;}
     sfx('shot_'+t.type);}
