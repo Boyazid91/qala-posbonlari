@@ -969,7 +969,7 @@ const FOES={
   shohmoron:{e:'🐍',n:'Shohmoron tojli ilon',hp:6000,hpd:[4200,4600,5200],sp:.6,rw:0,arm:.2,boss:1,main:1},
   ajina:{e:'🌪️',n:'Qum ajinasi',hp:5800,hpd:[4640,6670,6960],sp:.42,rw:0,arm:.65,def:.65,boss:1,main:1},
   qoraqush:{e:'🦅',n:'Qoraqush',hp:5200,hpd:[4600,6200,6700],sp:.55,rw:0,arm:.6,def:.4,boss:1,main:1,noslow:1},
-  ajdarho:{e:'🐉',n:'Uch boshli Ajdar',hp:6500,hpd:[5200,7475,7800],sp:.38,rw:0,arm:.7,def:.7,boss:1}
+  ajdarho:{e:'🐉',n:'Uch boshli Ajdar',hp:6500,hpd:[5200,7475,7800],sp:.38,rw:0,arm:.5,def:.4,boss:1}
 };
 
 const WAVES=[
@@ -1777,7 +1777,7 @@ function midBoss(f,dt){if(f.atkT>0){f.atkT-=dt;return;}if(f.scd==null){f.scd=4;f
     for(let i=0;i<6;i++){const k=i/6;burst(q.x+(tx-q.x)*k,q.y-.3+(ty-q.y+.3)*k-Math.sin(k*Math.PI)*.5,2,f.type==='kjin'?['#ff6a00','#ffb347','#ffd34d']:['#9a5434','#c8744a','#6a3a22'],.6,.05,0);}
     if(f.type==='kjin'){t.stk='fire';sfx('sk_kjin');burst(tx,ty,16,['#ff6a00','#ffb347','#4a3a2a'],2.4,.05,-1);S.fx.push({kind:'txt',s:"🔥 Minora 3s otmaydi",x:tx,y:t.r,t:0,life:1.2,col:'#ff8a3a',big:1});}
     else{t.stk='clay';sfx('sk_loyp');burst(tx,ty,18,['#9a5434','#c8744a','#6a3a22'],2.4,.06,1);S.fx.push({kind:'txt',s:'🟤 Loyga botdi! 3s',x:tx,y:t.r,t:0,life:1.2,col:'#e8a070',big:1});}}}
-const BATK={yalmogiz:{cd:4.2,r:2.6,stun:3.2},devbek:{cd:5,r:1.9,stun:2.6},ajdarho:{cd:4.5,r:2.8,stun:3.2}};
+const BATK={yalmogiz:{cd:4.2,r:2.6,stun:3.2},devbek:{cd:5,r:1.9,stun:2.6},ajdarho:{cd:4.5,r:2.8,stun:3}};
 function bossAtk(f,dt){const A=BATK[f.type];if(!A)return;if(f.atkT>0)f.atkT-=dt;if(f.bcd==null)f.bcd=2.5;f.bcd-=dt;if(f.bcd>0||f.d<0)return;const q=posAt(f.d);
   const near=S.towers.filter(t=>Math.hypot(t.c+.5-q.x,t.r+.5-q.y)<=A.r);if(!near.length)return;f.bcd=A.cd;f.atkT=.7;const B=S.bfx||(S.bfx=[]);
   if(f.type==='devbek'){for(const t of S.towers)if(Math.hypot(t.c+.5-q.x,t.r+.5-q.y)<=A.r){t.stun=Math.max(t.stun||0,A.stun);t.stk='stomp';t.kick=1;}B.push({k:'stomp',x:q.x,y:q.y+.2,t:0,life:.7,r:A.r});burst(q.x,q.y+.3,22,['#c9ad7a','#8a6a3e','#e6cf98'],3,.07,1.5);S.shake=Math.max(S.shake,.9);sfx('stomp');f.stomps=(f.stomps||0)+1;if(f.stomps%3===0){const vic=near.filter(t=>!TOWERS[t.type].ult);if(vic.length){const t=vic.reduce((a,b)=>Math.hypot(a.c+.5-q.x,a.r+.5-q.y)<Math.hypot(b.c+.5-q.x,b.r+.5-q.y)?a:b);setTimeout(()=>{if(S&&S.towers.includes(t))razeTower(t);},350);}}}
