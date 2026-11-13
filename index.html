@@ -947,18 +947,18 @@ const FOES={
   dev:{e:'👹',n:"Ko'k dev",hp:200,sp:.6,rw:16,arm:.75},
   jin:{e:'👺',n:'Kichik jin',hp:55,sp:1.55,rw:7,arm:.25},
   loyaskar:{e:'🗿',n:'Loy askar',hp:85,sp:.8,rw:8,arm:.35},
-  kjin:{e:'🧞',n:'Katta jin',hp:2400,sp:.55,rw:200,arm:.3,boss:1,mid:1},
+  kjin:{e:'🧞',n:'Katta jin',hp:2400,hpd:[1920,2760,2880],sp:.55,rw:200,arm:.75,def:.55,boss:1,mid:1},
   loyp:{e:'🗿',n:'Loy Pahlavon',hp:2700,hpd:[2600,3300,3800],sp:.45,rw:220,arm:.75,def:.4,boss:1,mid:1},
-  chshoh:{e:'🦂',n:'Chayonlar shohi',hp:950,hpd:[960,1192,1340],sp:.7,rw:80,arm:.4,def:.5,boss:1,mb:1,look:'chayon'},
-  boribek:{e:'🐺',n:"Katta bo'ri",hp:850,hpd:[900,1200,1500],sp:1.05,rw:80,arm:.25,def:.4,boss:1,mb:1,look:'bori'},
-  malika:{e:'👻',n:'Alvastilar malikasi',hp:950,hpd:[1200,1500,1800],sp:.8,rw:90,arm:.35,def:.35,noslow:1,boss:1,mb:1,look:'alvasti'},
-  ataman:{e:'🥷',n:"Qaroqchilar boshlig'i",hp:1050,hpd:[900,1200,1600],sp:1.6,rw:100,arm:.35,def:.45,boss:1,mb:1,look:'qaroqchi'},
-  yalmogiz:{e:'🧙‍♀️',n:"Yalmog'iz kampir",hp:1700,hpd:[1800,2300,2600],sp:.5,rw:150,arm:.4,boss:1},
-  devbek:{e:'👺',n:'Devlar boshlig\'i',hp:3000,hpd:[3000,3600,4200],sp:.45,rw:250,arm:.55,def:.15,boss:1},
-  shohmoron:{e:'🐍',n:'Shohmoron tojli ilon',hp:6000,hpd:[4200,4600,5200],sp:.6,rw:0,arm:.15,boss:1,main:1},
-  ajina:{e:'🌪️',n:'Qum ajinasi',hp:5800,sp:.42,rw:0,arm:.25,boss:1,main:1},
-  qoraqush:{e:'🦅',n:'Qoraqush',hp:5200,hpd:[4600,6200,6700],sp:.55,rw:0,arm:.45,def:.3,boss:1,main:1,noslow:1},
-  ajdarho:{e:'🐉',n:'Uch boshli Ajdar',hp:6500,sp:.38,rw:0,arm:.35,boss:1}
+  chshoh:{e:'🦂',n:'Chayonlar shohi',hp:950,hpd:[1200,1400,1600],sp:.7,rw:80,arm:.7,def:.6,boss:1,mb:1,look:'chayon'},
+  boribek:{e:'🐺',n:"Katta bo'ri",hp:850,hpd:[1400,1600,1800],sp:1.05,rw:80,arm:.4,def:.5,boss:1,mb:1,look:'bori'},
+  malika:{e:'👻',n:'Alvastilar malikasi',hp:950,hpd:[1200,1500,1800],sp:.8,rw:90,arm:.45,def:.45,noslow:1,boss:1,mb:1,look:'alvasti'},
+  ataman:{e:'🥷',n:"Qaroqchilar boshlig'i",hp:1050,hpd:[1400,1600,1800],sp:1.6,rw:100,arm:.45,def:.6,boss:1,mb:1,look:'qaroqchi'},
+  yalmogiz:{e:'🧙‍♀️',n:"Yalmog'iz kampir",hp:1700,hpd:[1800,2300,2600],sp:.5,rw:150,arm:.5,boss:1},
+  devbek:{e:'👺',n:'Devlar boshlig\'i',hp:3000,hpd:[3000,3600,4200],sp:.45,rw:250,arm:.55,def:.35,boss:1},
+  shohmoron:{e:'🐍',n:'Shohmoron tojli ilon',hp:6000,hpd:[4200,4600,5200],sp:.6,rw:0,arm:.2,boss:1,main:1},
+  ajina:{e:'🌪️',n:'Qum ajinasi',hp:5800,hpd:[4640,6670,6960],sp:.42,rw:0,arm:.65,def:.65,boss:1,main:1},
+  qoraqush:{e:'🦅',n:'Qoraqush',hp:5200,hpd:[4600,6200,6700],sp:.55,rw:0,arm:.6,def:.4,boss:1,main:1,noslow:1},
+  ajdarho:{e:'🐉',n:'Uch boshli Ajdar',hp:6500,hpd:[5200,7475,7800],sp:.38,rw:0,arm:.7,def:.7,boss:1}
 };
 
 const WAVES=[
@@ -1598,7 +1598,7 @@ function startWave(){if(S.state==='intro'){skipIntro();return;}if(pwMenuOpen())r
   if(S.wave===3&&!S.hero)setTimeout(()=>banner('<img class="bp" src="'+HPOR(pendHero)+'">⚔️ '+HEROES[pendHero].n+' keldi!','Pastdagi tugmani bos va uni joylashtir','gift'),2400);{const nh=HORD.find(k=>k!=='alp'&&HEROES[k].w>3&&HEROES[k].w===S.wave);if(nh)setTimeout(()=>banner('<img class="bp" src="'+HPOR(nh)+'">'+HEROES[nh].n+' ochildi!',S.hero?'Qahramon tugmasi → 🔄 Almashtir':'Qahramon tugmasini bos','gift'),2400);}
   updHud();setGo();hideSheet();sel=null;}
 
-function damage(f,amt,kind,src){if(f.invT>0||f.crum>0||f.howl>0)return;const F=FOES[f.type];let d=amt;if(kind==='phys'&&F.arm)d*=1-F.arm;if(F.def)d*=1-F.def;if(F.boss&&M().bossMul)d*=M().bossMul;if(f.burT>0)d*=.7;
+function damage(f,amt,kind,src){if(f.invT>0||f.crum>0||f.howl>0)return;const F=FOES[f.type];let d=amt;if(kind==='phys'&&F.arm)d*=1-F.arm;if(F.def)d*=1-F.def;if(F.boss&&M().bossMul)d*=M().bossMul;if(f.burT>0)d*=.6;
   f.hp-=d;if(f.hp<=0&&f.dead==null)kill(f,src);}
 function kill(f,src){const F=FOES[f.type];if(f.type==='loyaskar'&&!f.revd){f.revd=1;f.crum=1.6;f.hp=f.max*.5;const q=posAt(f.d);burst(q.x,q.y,16,['#c8744a','#9a5434','#e8a070'],2.4,.06,1.2);sfx('hit_stone');return;}f.dead=0;f.fp=posAt(f.d);burst(f.fp.x,f.fp.y,F.boss?40:10,['#ffd34d','#ffffff','#f2b632','#7fd3ff'],F.boss?4:2.4,F.boss?.07:.045,2);if(F.rw)flyCoin(f.fp.x,f.fp.y);if(F.boss)S.shake=1.5;const rw=Math.round(F.rw*(M().gold||1));S.coins+=rw;S.kills++;bump('pCoins');
   if(rw)S.fx.push({kind:'txt',s:'+'+rw,x:f.fp.x,y:f.fp.y-.3,t:0,life:.9,col:'#ffd34d',big:F.boss});
@@ -1703,15 +1703,15 @@ function elemFx(f,F,x,y,sz,ea){const tm=S.t||0,id=f.id||0;
 function mhit(f){if(!S||!IMG['fx-'+master+'-1'])return;const q=posAt(f.d);const set={olov:[2,4,5],muz:[2,4,1],giyoh:[1,2,3],nur:[2,3,4]}[master];const A=S.mh||(S.mh=[]);
   for(let i=0;i<2;i++){const a=Math.random()*6.28;A.push({x:q.x+(Math.random()-.5)*.2,y:q.y-.18,vx:Math.cos(a)*.9,vy:Math.sin(a)*.5-.7,t:0,life:.5,si:set[Math.random()*3|0],rot:Math.random()*6,vr:(Math.random()-.5)*8});}
   if(A.length>90)A.splice(0,A.length-90);if(master==='nur')f.nurT=.35;}
-const MBS={chshoh:{cd:5,r:2.3},boribek:{cd:6,r:3.2},malika:{cd:6,r:0},ataman:{cd:0,r:0}};
-function miniBoss(f,dt){const A=MBS[f.type];if(!A)return;f.atkK='skill';if(f.atkT>0)f.atkT-=dt;if(f.type==='ataman'){f.stl=(f.stl??2)-dt;if(f.stl<=0&&f.d>=0){f.stl=4;const n=Math.min(10,S.coins);if(n>0){S.coins-=n;updHud();const q=posAt(f.d);S.fx.push({kind:'txt',s:'-'+n+' 🪙',x:q.x,y:q.y-.9,t:0,life:1.1,col:'#ff6b4a',big:1});sfx('sk_ataman');}}if(total-f.d<1.8)f.atkT=.3;return;}if(f.mcd==null)f.mcd=2;f.mcd-=dt;if(f.mcd>0)return;const q=posAt(f.d);
+const MBS={chshoh:{cd:5,r:2.3},boribek:{cd:6,r:3.2},malika:{cd:5,r:0},ataman:{cd:0,r:0}};
+function miniBoss(f,dt){const A=MBS[f.type];if(!A)return;f.atkK='skill';if(f.atkT>0)f.atkT-=dt;if(f.type==='ataman'){f.stl=(f.stl??2)-dt;if(f.stl<=0&&f.d>=0){f.stl=4;const n=Math.min(15,S.coins);if(n>0){S.coins-=n;updHud();const q=posAt(f.d);S.fx.push({kind:'txt',s:'-'+n+' 🪙',x:q.x,y:q.y-.9,t:0,life:1.1,col:'#ff6b4a',big:1});sfx('sk_ataman');}}if(total-f.d<1.8)f.atkT=.3;return;}if(f.mcd==null)f.mcd=2;f.mcd-=dt;if(f.mcd>0)return;const q=posAt(f.d);
   if(f.type==='chshoh'){const near=S.towers.filter(t=>!TOWERS[t.type].ult&&!(t.zhr>0)&&Math.hypot(t.c+.5-q.x,t.r+.5-q.y)<=A.r);if(!near.length)return;const t=near.reduce((a,b)=>Math.hypot(a.c+.5-q.x,a.r+.5-q.y)<Math.hypot(b.c+.5-q.x,b.r+.5-q.y)?a:b);f.mcd=A.cd;f.atkT=.8;t.zhr=3;t.kick=1;sfx('sk_chshoh');burst(t.c+.5,t.r+.3,16,['#9be36a','#5fbf3a','#2f7a1f'],2.2,.05,-1);S.fx.push({kind:'txt',s:'🦂 Zahar! sekin otadi',x:t.c+.5,y:t.r,t:0,life:1.4,col:'#7dff6a',big:1});}
   else if(f.type==='boribek'){f.mcd=A.cd;f.atkT=1.8;f.howl=1.8;let n=0;for(const o of S.foes)if(o.type==='bori'&&o.dead==null&&o.d>=0&&Math.abs(o.d-f.d)<=A.r){o.hast=3;n++;}for(let i=0;i<4;i++){const w=spawnMin('bori',f.d-.25-i*.3);w.hast=2;burst(q.x,q.y,6,['#8a7a6a','#5a4a3a'],1.6,.04,1);}sfx('sk_boribek');S.fx.push({kind:'ring',x:q.x,y:q.y,r:A.r*.8,t:0,life:.7,col:'#ffd34d'});S.fx.push({kind:'txt',s:"🐺 Uvladi! 4 bo'ri chaqirdi",x:q.x,y:q.y-.9,t:0,life:1.4,col:'#ffd34d',big:1});S.shake=Math.max(S.shake,.4);}
   else if(f.type==='malika'){f.mcd=A.cd;f.atkT=.6;f.invT=2;sfx('ap_alvasti');burst(q.x,q.y-.2,20,['#c18cff','#e8d8ff','#6a4a9a'],2.4,.05,-1);S.fx.push({kind:'txt',s:"👻 G'oyib bo'ldi!",x:q.x,y:q.y-.9,t:0,life:1.3,col:'#d8b8ff',big:1});}}
 function spawnMin(type,d){const hm=(1+.14*(S.wave-1))*DIFF[diff].hp,hp=Math.round(FOES[type].hp*hm);const m={id:fid++,type,hp,max:hp,d:Math.max(0,Math.min(total-1.5,d)),slowT:0,frz:0,burnT:0,poisT:0,ph:Math.random(),fc:1,hitT:0,age:2};S.foes.push(m);return m;}
 function nearTower(q,r){let b=null,bd=1e9;for(const t of S.towers){if(TOWERS[t.type].ult)continue;const dd=Math.hypot(t.c+.5-q.x,t.r+.5-q.y);if(dd<=r&&dd<bd){bd=dd;b=t;}}return b;}
 function mainBoss(f,dt){if(f.atkT>0)f.atkT-=dt;if(f.scd==null)f.scd=5;f.scd-=dt;if(f.scd>0)return;const q=posAt(f.d);f.atkK='skill';
-  if(f.type==='shohmoron'){f.scd=6;f.atkT=2.5;f.burT=2.5;f.hast=2.5;burst(q.x,q.y+.2,26,['#c9ad7a','#8a6a3e','#e6cf98'],2.6,.07,1.2);sfx('sk_shohmoron');S.fx.push({kind:'txt',s:"🐍 Yer ostiga kirdi! Himoya +30%, jon tiklanmoqda",x:q.x,y:q.y-1,t:0,life:1.4,col:'#ffd34d',big:1});}
+  if(f.type==='shohmoron'){f.scd=6;f.atkT=2.5;f.burT=2.5;f.hast=2.5;burst(q.x,q.y+.2,26,['#c9ad7a','#8a6a3e','#e6cf98'],2.6,.07,1.2);sfx('sk_shohmoron');S.fx.push({kind:'txt',s:"🐍 Yer ostiga kirdi! Himoya +40%, jon tiklanmoqda",x:q.x,y:q.y-1,t:0,life:1.4,col:'#ffd34d',big:1});}
   else if(f.type==='ajina'){f.scd=6;f.atkT=1.8;let n=0;for(const t of S.towers)if(!TOWERS[t.type].ult&&Math.hypot(t.c+.5-q.x,t.r+.5-q.y)<=3){t.stun=Math.max(t.stun||0,2.5);t.stk='sand';n++;burst(t.c+.5,t.r+.3,10,['#e6cf98','#c9ad7a'],2,.05,-.5);}S.fx.push({kind:'ring',x:q.x,y:q.y,r:2.4,t:0,life:.8,col:'#e6cf98'});burst(q.x,q.y,34,['#e6cf98','#c9ad7a','#b8955f'],3.4,.08,-.4);S.shake=Math.max(S.shake,.6);sfx('sk_ajina');S.fx.push({kind:'txt',s:"🌪️ Qum bo'roni! "+n+' minora',x:q.x,y:q.y-1,t:0,life:1.4,col:'#ffe2a0',big:1});}
   else if(f.type==='qoraqush'){const TT=S.towers.filter(t=>!TOWERS[t.type].ult&&Math.hypot(t.c+.5-q.x,t.r+.5-q.y)<=3.2).sort((a,b)=>Math.hypot(a.c+.5-q.x,a.r+.5-q.y)-Math.hypot(b.c+.5-q.x,b.r+.5-q.y)).slice(0,2);const t=TT[0];if(!t){f.scd=.6;return;}f.scd=6;f.atkT=1.2;for(const u of TT){u.stun=Math.max(u.stun||0,3.5);u.stk='dark';u.kick=1;burst(u.c+.5,u.r+.3,22,['#1a1420','#3a2a40','#6a5a70'],2.6,.07,-1);}sfx('sk_qoraqush');S.fx.push({kind:'txt',s:(TT.length>1?"🦅 Qoraqush 2 minorani qoraytirdi!":"🦅 Qoraqush minorani qoraytirdi!"),x:t.c+.5,y:t.r,t:0,life:1.4,col:'#c8b8e8',big:1});}}
 function midBoss(f,dt){if(f.atkT>0){f.atkT-=dt;return;}if(f.scd==null){f.scd=4;f.acd=2.5;}f.scd-=dt;f.acd-=dt;const q=posAt(f.d);
