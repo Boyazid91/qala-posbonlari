@@ -2157,7 +2157,7 @@ const SFXF={tap:[1,.45,60],no:[2,.5,150],sheet:[3,.5,80],kill:[4,.35,70],coins:[
 const SFXFB={sheet:'tap',herodie:'no',revive:'up',heromove:'sword',sword2:'sword',stomp:'boss',raze:'hurt',gateclose:'place',boss_yalmogiz:'boss',boss_devbek:'boss',boss_ajdarho:'boss',coins:'clear'};
 const SBUF={},SLAST={};let sLoading=false;
 function sfxLoad(){if(sLoading||!AC)return;sLoading=true;const ids=[...new Set(Object.values(SFXF).map(v=>v[0]))];
-  ids.forEach(n=>fetch('sfx/s'+n+'.mp3?v=276').then(r=>{if(!r.ok)throw 0;return r.arrayBuffer();}).then(b=>new Promise((ok,no)=>AC.decodeAudioData(b,ok,no))).then(bf=>{SBUF[n]=bf;}).catch(()=>{}));}
+  ids.forEach(n=>fetch('sfx/s'+n+'.mp3?v=292').then(r=>{if(!r.ok)throw 0;return r.arrayBuffer();}).then(b=>new Promise((ok,no)=>AC.decodeAudioData(b,ok,no))).then(bf=>{SBUF[n]=bf;}).catch(()=>{}));}
 function sfxPlay(k){if(!AC||!soundOn)return true;sfxLoad();const F=SFXF[k];if(!F||!SBUF[F[0]])return false;sfx(k);return true;}
 function sfx(k){if(!k)return;if(!AC||!soundOn)return;sfxLoad();const F=SFXF[k];
   if(F&&SBUF[F[0]]){const n=performance.now();if(F[2]&&n-(SLAST[k]||0)<F[2])return;SLAST[k]=n;const src=AC.createBufferSource(),g=AC.createGain();src.buffer=SBUF[F[0]];g.gain.value=F[1];src.connect(g);g.connect(AC.destination);if(F[4])src.start(0,F[3],F[4]);else src.start();return;}
