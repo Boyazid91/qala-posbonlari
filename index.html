@@ -825,6 +825,14 @@ i.cn{filter:none!important}
 #tutC{position:fixed;z-index:60;pointer-events:none;display:none;filter:drop-shadow(0 3px 3px #0008);animation:tutU .55s ease-in-out infinite alternate}
 #ltoast{position:fixed;left:50%;bottom:18%;transform:translate(-50%,20px);z-index:80;padding:10px 16px;border-radius:12px;background:#3b2412f2;border:2px solid #c9a35a;color:#ffd34d;font-weight:800;font-size:15px;opacity:0;pointer-events:none;transition:.25s;max-width:90vw;text-align:center}
 #ltoast.show{opacity:1;transform:translate(-50%,0)}
+
+/* v311 */
+.sb u{display:flex}.sb u b{flex:none}
+.sb u b.sbx{border-radius:0 5px 5px 0;animation:sbx 1.6s ease-in-out infinite}
+.sb u b.sbx:not(:first-child){margin-left:0}
+.sbu u b:first-child{border-radius:5px 0 0 5px}
+.sb i{flex:none;min-width:34px;font-style:normal;font-weight:900;color:#2f8a35;text-align:right}
+@keyframes sbx{50%{filter:brightness(1.25)}}
 </style>
 <link rel="manifest" href="manifest.json"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Qal'a"><link rel="apple-touch-icon" href="img/icon-180.png">
 </head>
@@ -2141,9 +2149,11 @@ function renderHeroesL(){if(!S||S.state==='end')hudPre();const el=$('heroesL');
   el.querySelectorAll('.hcd').forEach((c,j)=>c.onclick=()=>{if(j!==hIdx())hTo(j,1);});
   $('hDots').innerHTML=HORD.map(()=>'<span></span>').join('');const idx=Math.max(0,HORD.indexOf(pendHero));hInfoK=null;requestAnimationFrame(()=>{hTo(idx,0);hDot();});}
 let hInfoK=null;
-function hInfo(k){if(hInfoK===k)return;hInfoK=k;const H=HEROES[k];const bar=(l,v,cl)=>'<div class="sb"><span>'+l+'</span><u><b class="'+cl+'" style="width:'+Math.round(Math.max(.1,Math.min(1,v))*100)+'%"></b></u></div>';
+function hInfo(k){const UL=upLv('h_'+k),KK=k+'_'+UL;if(hInfoK===KK)return;hInfoK=KK;const H=HEROES[k],mu=1+.1*UL;
+  /* v311: kuchaytirish bonusi yashil bo'lak va +% bilan */
+  const bar=(l,v,cl,up)=>{const b=Math.max(.1,Math.min(1,v))*.8,e=up?Math.min(1-b,b*(mu-1)):0;return '<div class="sb'+(up&&UL?' sbu':'')+'"><span>'+l+'</span><u><b class="'+cl+'" style="width:'+Math.round(b*100)+'%"></b>'+(e>0?'<b class="g sbx" style="width:'+Math.round(e*100)+'%"></b>':'')+'</u>'+(up&&UL?'<i>+'+UL*10+'%</i>':'')+'</div>';};
   const sk=(H.s5?'<div class="hsk"><em>5</em>'+H.s5+'</div>':'')+(H.s10?'<div class="hsk"><em>10</em>'+H.s10+'</div>':'');
-  $('hInfo').innerHTML='<p>'+H.d.replace(/^[^:]+:\s*/,'')+'</p><div class="hib">'+bar('Jon',H.hp/160,'r')+bar('Zarar',H.dm,'y')+bar('Tezlik',H.sp/1.6,'b')+'</div>'+(sk?'<div class="hsks">'+sk+'</div>':'');}
+  $('hInfo').innerHTML='<p>'+H.d.replace(/^[^:]+:\s*/,'')+'</p><div class="hib">'+bar('Jon',H.hp/160,'r',1)+bar('Zarar',H.dm,'y',1)+bar('Tezlik',H.sp/1.6,'b')+'</div>'+(sk?'<div class="hsks">'+sk+'</div>':'');}
 function hTo(n,sm){const el=$('heroesL'),c=el.children[n];if(!c)return;el.scrollTo({left:c.offsetLeft-(el.clientWidth-c.offsetWidth)/2,behavior:sm?'smooth':'auto'});}
 function hIdx(){const el=$('heroesL'),m=el.scrollLeft+el.clientWidth/2;let bi=0,bd=1e9;[...el.children].forEach((c,j)=>{const d=Math.abs(c.offsetLeft+c.offsetWidth/2-m);if(d<bd){bd=d;bi=j;}});return bi;}
 function hDot(){const i=hIdx();if(pendHero!==HORD[i]&&$('ovHero')&&!$('ovHero').classList.contains('hide'))sfx('h_swipe');pendHero=HORD[i];$('hDots').querySelectorAll('span').forEach((s,j)=>s.classList.toggle('on',j===i));[...$('heroesL').children].forEach((c,j)=>c.classList.toggle('cur',j===i));hInfo(HORD[i]);}
