@@ -2105,10 +2105,11 @@ function pwFire(k,x,y){const p=PW.find(q=>q.k===k);S.pwcd=S.pwcd||{};S.pwcd[k]=p
 /* v305: birinchi xaritada (Qo'qon) barmoq qahramon tugmasini va tayyor ilohiy kuchni ko'rsatadi */
 /* v306: shaharlar xaritasida tanga yetsa barmoq kuchaytirish belgisini ko'rsatadi */
 /* v307: har bir barmoq faqat bir marta: o'yinchi bosgach qaytib chiqmaydi */
-function tutDone(k){try{return localStorage.getItem('qp_tut_'+k)==='1';}catch(e){return false;}}
-document.addEventListener('pointerdown',e=>{const t=e.target&&e.target.closest?e.target:null;if(!t)return;const k=t.closest('#bHero')?'hero':t.closest('.pwb')?'pw':t.closest('#cUp')?'up':null;if(k&&!tutDone(k)){try{localStorage.setItem('qp_tut_'+k,'1');}catch(_){}}},true);
+const TUTC={};function tutDone(k){if(TUTC[k])return true;try{if(localStorage.getItem('qp_tut_'+k)==='1'){TUTC[k]=1;return true;}}catch(e){}return false;}
+document.addEventListener('pointerdown',e=>{const t=e.target&&e.target.closest?e.target:null;if(!t)return;const k=t.closest('#bHero')?'hero':t.closest('.pwb')?'pw':t.closest('#cUp')?'up':null;if(k&&!tutDone(k)){TUTC[k]=1;try{localStorage.setItem('qp_tut_'+k,'1');}catch(_){}}},true);
 function tutCity(){let el=$('tutC');const tg=$('cUp');let on=false;
- try{on=!$('ovCity').classList.contains('hide')&&[...document.querySelectorAll('.ov:not(.hide)')].every(o=>o.id==='ovCity')&&!($('cinfo')&&$('cinfo').classList.contains('show'))&&!tutDone('up')&&upCanAny();}catch(e){}
+ if(tutDone('up')||$('ovCity').classList.contains('hide')){if(el&&el.style.display!=='none')el.style.display='none';return;}
+ try{on=[...document.querySelectorAll('.ov:not(.hide)')].every(o=>o.id==='ovCity')&&!($('cinfo')&&$('cinfo').classList.contains('show'))&&!tutDone('up')&&upCanAny();}catch(e){}
  if(!on){if(el)el.style.display='none';return;}
  if(!el){el=document.createElement('img');el.id='tutC';el.className='tu';el.src='img/ui-pointer.png';el.alt='';document.body.appendChild(el);}
  const r=tg.getBoundingClientRect();if(!r.width||!el.naturalWidth){el.style.display='none';return;}
@@ -2116,7 +2117,7 @@ function tutCity(){let el=$('tutC');const tg=$('cUp');let on=false;
 setInterval(tutCity,150);
 /* v314: Xivaga yetganda To'maris, Buxoroga yetganda Alpomish qulfdan ochilganini bir marta ko'rsatish */
 let huVis=0;
-function huCheck(){const ok=!$('ovCity').classList.contains('hide')&&[...document.querySelectorAll('.ov:not(.hide)')].every(o=>o.id==='ovCity')&&!($('cinfo')&&$('cinfo').classList.contains('show'));
+let huAll=0;function huCheck(){if(huAll)return;if($('ovCity').classList.contains('hide')){huVis=0;return;}if(store('qp_hun_tomaris')==='1'&&store('qp_hun_alp')==='1'){huAll=1;return;}const ok=[...document.querySelectorAll('.ov:not(.hide)')].every(o=>o.id==='ovCity')&&!($('cinfo')&&$('cinfo').classList.contains('show'));
  if(!ok){huVis=0;return;}huVis+=.15;if(huVis<1.6)return;
  for(const k of ['tomaris','alp']){if(owned(k)&&store('qp_hun_'+k)!=='1'){store('qp_hun_'+k,'1');huShow(k);return;}}}
 function huShow(k){const H=HEROES[k];let o=$('ovHU');if(!o){o=document.createElement('div');o.id='ovHU';o.className='ov hide';document.body.appendChild(o);}
@@ -2124,7 +2125,7 @@ function huShow(k){const H=HEROES[k];let o=$('ovHU');if(!o){o=document.createEle
  o.classList.remove('hide');sfx('sheet');setTimeout(()=>{sfx('up');o.classList.add('open');},900);setTimeout(()=>sfx('h_pick'),1150);
  $('huGo').onclick=()=>{sfx('tap');o.classList.add('hide');o.classList.remove('open');};}
 setInterval(huCheck,150);
-function tutHand(){let el=$('tutH');if(!el){el=document.createElement('img');el.id='tutH';el.src='img/ui-pointer.png';el.alt='';$('stage').appendChild(el);}
+let tutHT=0,tutHOff=0;function tutHand(){if(tutHOff)return;const nw=performance.now();if(nw-tutHT<150)return;tutHT=nw;if(tutDone('hero')&&tutDone('pw')){tutHOff=1;const e0=$('tutH');if(e0)e0.style.display='none';return;}if(mapKey!=='qoqon'){const e0=$('tutH');if(e0&&e0.style.display!=='none')e0.style.display='none';return;}let el=$('tutH');if(!el){el=document.createElement('img');el.id='tutH';el.src='img/ui-pointer.png';el.alt='';$('stage').appendChild(el);}
  let tg=null,sd='up';
  if(S&&mapKey==='qoqon'&&(S.state==='wave'||S.state==='idle')&&!document.querySelector('.ov:not(.hide)')&&!heroSheet&&!$('sheet').classList.contains('show')){
   if(!S.hero&&S.wave>=3&&!heroMode&&!tutDone('hero'))tg=$('bHero');
