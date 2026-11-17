@@ -833,6 +833,25 @@ i.cn{filter:none!important}
 .sbu u b:first-child{border-radius:5px 0 0 5px}
 .sb i{flex:none;min-width:34px;font-style:normal;font-weight:900;color:#2f8a35;text-align:right}
 @keyframes sbx{50%{filter:brightness(1.25)}}
+
+/* v314: qahramon ochildi oynasi */
+#ovHU{z-index:70;background:#000b;display:flex;align-items:center;justify-content:center;padding:16px}
+#ovHU.hide{display:none}
+#ovHU .hubox{width:min(360px,92vw);text-align:center;padding:16px 14px 14px;border-radius:16px;background:#7a4520;border:3px solid #2e1608;box-shadow:0 10px 0 #0007,inset 0 0 0 2px #a8673a,inset 0 0 0 6px #5b3016;color:#fff3d6;animation:pop .45s cubic-bezier(.3,1.6,.5,1)}
+#ovHU .hut{font:900 22px/1.1 'Lilita One','Trebuchet MS',sans-serif;color:#ffd34d;text-shadow:0 2px 0 #2a0e03,2px 0 0 #2a0e03,-2px 0 0 #2a0e03,0 -2px 0 #2a0e03;text-transform:uppercase}
+#ovHU .huimg{position:relative;height:min(280px,40vh);margin:8px 0 4px;display:flex;align-items:flex-end;justify-content:center}
+#ovHU .huray{position:absolute;left:50%;top:50%;width:120%;aspect-ratio:1;transform:translate(-50%,-50%);background:repeating-conic-gradient(#ffd77a44 0 10deg,transparent 10deg 22deg);border-radius:50%;-webkit-mask:radial-gradient(circle,#000 25%,transparent 68%);mask:radial-gradient(circle,#000 25%,transparent 68%);opacity:0;transition:opacity .6s}
+#ovHU .huh{position:relative;height:100%;max-width:100%;object-fit:contain;filter:brightness(.15) saturate(0);transition:filter .7s ease-out,transform .7s cubic-bezier(.3,1.6,.5,1);transform:scale(.92)}
+#ovHU .hulk{position:absolute;left:50%;top:42%;width:72px;transform:translate(-50%,-50%);animation:huShake .9s ease-in-out;filter:drop-shadow(0 3px 4px #000a)}
+#ovHU.open .huray{opacity:1;animation:spin 18s linear infinite}
+#ovHU.open .huh{filter:none;transform:scale(1)}
+#ovHU.open .hulk{animation:huBreak .55s ease-in forwards}
+#ovHU .hun{font:900 26px/1.1 'Lilita One','Trebuchet MS',sans-serif;color:#fff;text-shadow:0 2px 0 #2a0e03}
+#ovHU .hur{display:inline-block;margin:4px 0;padding:2px 10px;border-radius:999px;background:#c0392b;color:#fff;font-weight:800;font-size:12px;text-transform:uppercase}
+#ovHU #huGo{width:80%;margin:0 auto}
+#ovHU p{margin:6px 4px 10px;font-size:14px;line-height:1.35;color:#ffe8b8}
+@keyframes huShake{0%,100%{transform:translate(-50%,-50%) rotate(0)}20%{transform:translate(-50%,-50%) rotate(-12deg)}40%{transform:translate(-50%,-50%) rotate(12deg)}60%{transform:translate(-50%,-50%) rotate(-10deg)}80%{transform:translate(-50%,-50%) rotate(8deg)}}
+@keyframes huBreak{0%{transform:translate(-50%,-50%) scale(1);opacity:1}40%{transform:translate(-50%,-50%) scale(1.35) rotate(-8deg);opacity:1}100%{transform:translate(-50%,-10%) scale(.6) rotate(25deg);opacity:0}}
 </style>
 <link rel="manifest" href="manifest.json"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Qal'a"><link rel="apple-touch-icon" href="img/icon-180.png">
 </head>
@@ -2086,6 +2105,16 @@ function tutCity(){let el=$('tutC');const tg=$('cUp');let on=false;
  const r=tg.getBoundingClientRect();if(!r.width||!el.naturalWidth){el.style.display='none';return;}
  const w=Math.max(40,r.width*.55),h=w*el.naturalHeight/el.naturalWidth;el.style.width=w+'px';el.style.left=Math.round(r.left+r.width/2-w/2)+'px';el.style.top=Math.round(r.top-h+r.height*.15)+'px';el.style.display='block';}
 setInterval(tutCity,150);
+/* v314: Xivaga yetganda To'maris, Buxoroga yetganda Alpomish qulfdan ochilganini bir marta ko'rsatish */
+let huVis=0;
+function huCheck(){const ok=!$('ovCity').classList.contains('hide')&&[...document.querySelectorAll('.ov:not(.hide)')].every(o=>o.id==='ovCity')&&!($('cinfo')&&$('cinfo').classList.contains('show'));
+ if(!ok){huVis=0;return;}huVis+=.15;if(huVis<1.6)return;
+ for(const k of ['tomaris','alp']){if(owned(k)&&store('qp_hun_'+k)!=='1'){store('qp_hun_'+k,'1');huShow(k);return;}}}
+function huShow(k){const H=HEROES[k];let o=$('ovHU');if(!o){o=document.createElement('div');o.id='ovHU';o.className='ov hide';document.body.appendChild(o);}
+ o.innerHTML='<div class="hubox"><div class="hut">Yangi qahramon ochildi!</div><div class="huimg"><i class="huray"></i><img class="huh" src="img/hero-'+k+'-menu.png" alt=""><img class="hulk" src="img/ic-qulf.png" alt=""></div><div class="hun">'+H.n+'</div><div class="hur">'+(HROLE[k]||'')+'</div><p>'+H.d+'</p><button class="big" id="huGo">Zo\'r!</button></div>';
+ o.classList.remove('hide');sfx('sheet');setTimeout(()=>{sfx('up');o.classList.add('open');},900);setTimeout(()=>sfx('h_pick'),1150);
+ $('huGo').onclick=()=>{sfx('tap');o.classList.add('hide');o.classList.remove('open');};}
+setInterval(huCheck,150);
 function tutHand(){let el=$('tutH');if(!el){el=document.createElement('img');el.id='tutH';el.src='img/ui-pointer.png';el.alt='';$('stage').appendChild(el);}
  let tg=null,sd='up';
  if(S&&mapKey==='qoqon'&&(S.state==='wave'||S.state==='idle')&&!document.querySelector('.ov:not(.hide)')&&!heroSheet&&!$('sheet').classList.contains('show')){
@@ -2208,7 +2237,7 @@ $('bContNew').onclick=()=>{sfx('tap');$('ovCont').classList.add('hide');runClear
 $('mbDiff').onclick=()=>{unlock();const b=document.querySelectorAll('#diff button')[(diff+1)%3];b.onclick();mbDiffSet();};
 $('mbHelp').onclick=()=>{unlock();sfx('tap');$('ovStart').classList.add('help');};
 $('bUpd').onclick=async()=>{sfx('tap');const m=$('updMsg');m.textContent="Yangi versiya yuklanyapti... natijalaring saqlanib qoladi";try{if(navigator.serviceWorker){const rs=await navigator.serviceWorker.getRegistrations();await Promise.all(rs.map(r=>r.update().catch(()=>{})));}if(window.caches){const ks=await caches.keys();await Promise.all(ks.filter(k=>/^qala/.test(k)).map(k=>caches.delete(k)));}}catch(e){}setTimeout(()=>{const u=location.pathname+'?v='+Date.now()+location.hash;location.replace(u);},400);};
-$('bReset').onclick=()=>{const b=$('bReset'),sp=b.querySelector('span');if(!b._arm){sfx('tap');b._arm=1;b._t0=sp.textContent;sp.textContent="⚠️ Rostdan o'chirilsinmi? Yana bosing";b.style.background='#ffd9d0';b.style.borderColor='#c0392b';$('updMsg').textContent="Yulduzlar, shaharlar, ilohiy kuchlar, tangalar va kuchaytirishlar o'chadi";clearTimeout(b._tm);b._tm=setTimeout(()=>{b._arm=0;sp.textContent=b._t0;b.style.background='';b.style.borderColor='';$('updMsg').textContent='';},5000);return;}clearTimeout(b._tm);sfx('tap');try{Object.keys(localStorage).filter(k=>/^qp_(best_|cst_|prog|pwc_|run|tanga|up_|tut_)/.test(k)).forEach(k=>localStorage.removeItem(k));}catch(e){}for(const k in UPM)delete UPM[k];resetDone=1;sp.textContent="✅ Natijalar tozalandi";$('updMsg').textContent="O'yin qaytadan yuklanyapti...";setTimeout(()=>location.reload(),700);};
+$('bReset').onclick=()=>{const b=$('bReset'),sp=b.querySelector('span');if(!b._arm){sfx('tap');b._arm=1;b._t0=sp.textContent;sp.textContent="⚠️ Rostdan o'chirilsinmi? Yana bosing";b.style.background='#ffd9d0';b.style.borderColor='#c0392b';$('updMsg').textContent="Yulduzlar, shaharlar, ilohiy kuchlar, tangalar va kuchaytirishlar o'chadi";clearTimeout(b._tm);b._tm=setTimeout(()=>{b._arm=0;sp.textContent=b._t0;b.style.background='';b.style.borderColor='';$('updMsg').textContent='';},5000);return;}clearTimeout(b._tm);sfx('tap');try{Object.keys(localStorage).filter(k=>/^qp_(best_|cst_|prog|pwc_|run|tanga|up_|tut_|hun_)/.test(k)).forEach(k=>localStorage.removeItem(k));}catch(e){}for(const k in UPM)delete UPM[k];resetDone=1;sp.textContent="✅ Natijalar tozalandi";$('updMsg').textContent="O'yin qaytadan yuklanyapti...";setTimeout(()=>location.reload(),700);};
 let resetDone=0;
 
 /* v293: qo'shimcha tangalar va abadiy kuchaytirish (qahramonlar, ilohiy kuchlar: 5 darajagacha) */
