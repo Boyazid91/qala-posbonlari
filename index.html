@@ -774,6 +774,12 @@ i.cn{filter:none!important}
 .mupl{display:inline-block;margin-top:2px;padding:1px 8px;border-radius:999px;background:#ffe8a8;border:1px solid #c9a35a;color:#5b240e;font-size:12.5px;font-weight:800}
 .uptabs button{display:flex;align-items:center;justify-content:center;gap:5px}.uptabs .uti{width:34px;height:34px;margin:-6px 0;flex:none;filter:drop-shadow(0 2px 2px #0006)}
 #stSkip,#svSkip{display:flex;align-items:center;gap:8px;padding:6px 8px 6px 14px!important;line-height:1}#stSkip img,#svSkip img{width:45px;height:auto;display:block;filter:drop-shadow(0 2px 3px #000a)}#stSkip:active img,#svSkip:active img{transform:scale(.92)}
+#ovBuy{z-index:13}
+.buybox #buyImg{width:120px;height:120px;object-fit:contain;display:block;margin:0 auto 4px;filter:drop-shadow(0 4px 6px #0006)}
+.buybox h1{margin:0 0 4px!important}
+.buytag{display:inline-block;margin:4px 0 2px;padding:4px 12px;border-radius:999px;background:#3b2412;color:#ffd34d;font-weight:800;font-size:13px}
+.hcd{position:relative}.hprem{position:absolute;left:50%;top:8px;transform:translateX(-50%);z-index:2;white-space:nowrap;padding:3px 10px;border-radius:999px;background:#3b2412e8;border:2px solid #c9a35a;color:#ffd34d;font:800 13px/1.1 sans-serif}
+.cprem{position:absolute;left:50%;top:100%;transform:translate(-50%,105%);white-space:nowrap;padding:2px 8px;border-radius:999px;background:#3b2412e8;border:1.5px solid #c9a35a;color:#ffd34d;font:800 clamp(9px,2.6cqw,13px)/1.1 sans-serif;pointer-events:none}
 </style>
 <link rel="manifest" href="manifest.json"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Qal'a"><link rel="apple-touch-icon" href="img/icon-180.png">
 </head>
@@ -940,6 +946,18 @@ i.cn{filter:none!important}
     <div class="uplist" id="upL"></div>
     <p class="upnote">Tangalar har jangdan keyin beriladi: g'alaba va yulduzlar uchun ko'proq. Kuchaytirish abadiy saqlanadi.</p>
     <button class="big" id="upX">◀ Xaritaga</button>
+  </div>
+</div>
+<div class="ov hide" id="ovBuy">
+  <div class="box setbox buybox">
+    <img id="buyImg" alt="">
+    <h1 id="buyN"></h1>
+    <p id="buyD"></p>
+    <div class="buytag">💎 Premium · Play Market orqali bir martalik xarid</div>
+    <button class="big" id="buyGo">Sotib olish</button>
+    <button class="srow" id="buyTest" style="justify-content:center"><span>🧪 Sinov uchun bepul ochish</span></button>
+    <p id="buyMsg" style="font-size:12.5px;opacity:.8;margin:6px 0 0"></p>
+    <button class="srow" id="buyX" style="justify-content:center"><span>✕ Yopish</span></button>
   </div>
 </div>
 <div class="ov hide" id="ovEnd">
@@ -1631,11 +1649,15 @@ const HERO_LV=[null,
 const HEROES={alp:{n:'Alpomish',w:3,hp:160,dm:1,sp:1,img:'hero',d:"Yaqin jangchi: qilich bilan atrofdagilarni uradi, eng ko'p joni bor."},
  afandi:{n:'Afandi',w:3,hp:80,dm:.22,sp:.6,img:'hero-afandi',d:"Hiylakor: har 10 soniyada bitta dushmanni 3 soniya orqaga yurgizadi.",s5:"🪙 Oltin",p5:"🪙 Afandi yonida o'lgan har dushmandan +2 oltin",s10:"🫏 Eshak tepkisi",p10:"🫏 Eshak tepkisi: hiyla bossga ham ta'sir qiladi (2 s)"},
  barchin:{n:'Barchinoy',w:3,hp:90,dm:.65,sp:.6,img:'hero-barchin',d:"Kamonchi: 2.8 katak uzoqqa otadi, har 3-zarbada uchta dushmanga birdan o'q uzadi.",s5:"🔥 Olovli o'q",p5:"🔥 O'qlar yonadi: dushman kuyadi",s10:"🏹 O'q yomg'iri",p10:"🏹 Har 15 soniyada 6 soniya davomida maydonga o'q yog'adi"},
- gorogli:{n:"Go'ro'g'li",w:3,hp:120,dm:.8,sp:1.6,img:'hero-gorogli',d:"Otliq: har 8 soniyada G'irot 3 katak chopib o'tadi, yo'lidagilarni urib orqaga suradi.",s5:"❄️ Qotirish",p5:"❄️ Chopishda dushmanni 1 soniya qotiradi",s10:"🐎 To'polon",p10:"🐎 To'polon: G'irot 2 marta ketma-ket chopadi"},
+ gorogli:{n:"Go'ro'g'li",w:3,hp:78,dm:.48,sp:1.6,img:'hero-gorogli',d:"Otliq: har 8 soniyada G'irot 3 katak chopib o'tadi, yo'lidagilarni urib orqaga suradi.",s5:"❄️ Qotirish",p5:"❄️ Chopishda dushmanni 1 soniya qotiradi",s10:"🐎 To'polon",p10:"🐎 To'polon: G'irot 2 marta ketma-ket chopadi"},
  tomaris:{n:"To'maris",w:3,hp:149,dm:.61,sp:1,img:'hero-tomaris',d:"Sarkarda: jang bayrog'i atrofidagi (2 katak) minoralar 25% tezroq otadi.",s5:"🚩 Keng bayroq",p5:"🚩 Bayroq radiusi 3 katak",s10:"⚔️ Saklar hujumi",p10:"⚔️ Har 20 soniyada 4 ta Sak jangchi chaqiradi, 8 soniya jang qilishadi"}};
-const HORD=['alp','afandi','barchin','gorogli','tomaris'];
+const HORD=['gorogli','barchin','afandi','alp','tomaris'];
+/* v302: premium (Play Market'da pullik): Alpomish, To'maris, Buxoro va Samarqand xaritalari. To'lov hali ulanmagan: sotib olish oynasida sinov uchun ochish tugmasi bor. */
+const PREM={alp:{n:'Alpomish',img:'img/hero-alp-menu.png',d:"Afsonaviy botir: eng ko'p jon, keng zarba, jasorat aurasi va bo'ron."},tomaris:{n:"To'maris",img:'img/hero-tomaris-menu.png',d:"Sarkarda malika: bayrog'i atrofidagi minoralar tezroq otadi, saklar yordamga keladi."},buxoro:{n:'Buxoro xaritasi',img:'img/emblem-nur.png',d:"3-shahar: Qum ajinasi, Katta jin va Chayonlar shohiga qarshi jang."},samarqand:{n:'Samarqand xaritasi',img:'img/emblem-olov.png',d:"Oxirgi darvoza: Uch boshli ajdarho va Devlar shohi. O'yin yakuni shu yerda."}};
+function owned(k){if(!PREM[k])return true;try{return localStorage.getItem('qp_own_'+k)==='1';}catch(e){return false;}}
+function heroFree(k){return owned(k);}
 const HSZ={barchin:{idle:.8,walk:.8,run:.74,attack:.8,attack2:.8,dead:.4},gorogli:{idle:1,walk:1,run:.8,attack:1.02,attack2:1.08,dead:.85},tomaris:{idle:.95,walk:.95,run:.92,attack:.92,attack2:.98,dead:.82},afandi:{idle:.86,walk:.66,run:.66,attack:.7,attack2:.7,dead:.72}};
-let pendHero='alp',pickSel=null;
+let pendHero='gorogli',pickSel=null;
 function heroK(h){return (h&&h.k)||'alp';}function HN(h){return HEROES[heroK(h)].n;}function HPOR(k){return 'img/'+HEROES[k].img+'-portrait.png';}
 function bannerPos(h){const q=posAt(h.post);return {x:q.x+.42,y:q.y+.05};}
 function heroAuraMul(t){const h=S.hero;if(!h||h.dead)return 1;const K=heroK(h);if(K==='alp')return h.lvl>=7&&Math.hypot(t.c-h.c,t.r-h.r)<=1.6?1.2:1;if(K==='tomaris'){const b=bannerPos(h);return Math.hypot(t.c+.5-b.x,t.r+.5-b.y)<=(h.lvl>=5?3:2)?1.25:1;}return 1;}
@@ -1686,9 +1708,10 @@ function renderHero(){const h=S.hero,K=heroK(h),H=HEROES[K],L=HL(),N=HERO_LV[h.l
   $('bHMove').onclick=()=>{if(h.moveCd>0||h.dead){sfx('no');return;}heroMode=true;hideSheet();banner('⚔️ '+H.n+' qayerni qo\'riqlaydi?','Yo\'lakdagi sariq joyga bos');sfx('tap');updHud();};
   sh.classList.add('show');}
 function renderPick(swap){const sh=$('sheet');heroSheet=false;sel=null;
-  sh.innerHTML='<h3>'+(swap?'Qaysi qahramon bilan almashtiramiz?':'Qaysi qahramonni chaqiramiz?')+'</h3><div class="cards hcards">'+HORD.map(k=>{const H=HEROES[k],lock=S.wave<H.w,cur=swap&&S.hero&&heroK(S.hero)===k;
-    return '<button class="card'+(pickSel===k?' pick':'')+(lock||cur?' off':'')+'" data-k="'+k+'"><div class="e"><img src="'+HPOR(k)+'" alt="">'+(lock?'<i class="lk">🔒</i>':'')+'</div><div class="n">'+H.n+'</div><div class="c">'+(lock?H.w+"-to'lqin":cur?'hozir':'❤️'+H.hp)+'</div></button>';}).join('')+'</div><p id="tip">'+(pickSel?'':'Qahramonni tanlang: har birining o\'z kuchi bor.')+'</p>';
+  sh.innerHTML='<h3>'+(swap?'Qaysi qahramon bilan almashtiramiz?':'Qaysi qahramonni chaqiramiz?')+'</h3><div class="cards hcards">'+HORD.map(k=>{const H=HEROES[k],lock=S.wave<H.w||!owned(k),cur=swap&&S.hero&&heroK(S.hero)===k;
+    return '<button class="card'+(pickSel===k?' pick':'')+(lock||cur?' off':'')+'" data-k="'+k+'"><div class="e"><img src="'+HPOR(k)+'" alt="">'+(lock?'<i class="lk">🔒</i>':'')+'</div><div class="n">'+H.n+'</div><div class="c">'+(!owned(k)?'Premium':lock?H.w+"-to'lqin":cur?'hozir':'❤️'+H.hp)+'</div></button>';}).join('')+'</div><p id="tip">'+(pickSel?'':'Qahramonni tanlang: har birining o\'z kuchi bor.')+'</p>';
   sh.querySelectorAll('.card').forEach(b=>{b.onclick=()=>{const k=b.dataset.k,H=HEROES[k];
+    if(!owned(k)){sfx('no');buyOpen(k,()=>renderPick(swap));return;}
     if(S.wave<H.w){$('tip').innerHTML='🔒 <b>'+H.n+'</b> '+H.w+'-to\'lqindan ochiladi. '+H.d;sfx('no');return;}
     if(swap&&heroK(S.hero)===k){$('tip').textContent='Bu qahramon hozir jangda.';sfx('no');return;}
     if(pickSel!==k){pickSel=k;renderPick(swap);$('tip').innerHTML='<b>'+H.n+':</b> '+H.d+' <b>Tanlash uchun yana bos.</b>';sfx('tap');return;}
@@ -1979,7 +2002,7 @@ function pwFire(k,x,y){const p=PW.find(q=>q.k===k);S.pwcd=S.pwcd||{};S.pwcd[k]=p
   else if(k==='qish'){for(const f of live.filter(f=>f.d>=1.75)){const fd=(FOES[f.type].boss?1.5:3.5)*pwUp('qish');f.frz=Math.max(f.frz||0,fd+.05);S.fx.push({kind:'pw',p:'qish',foe:f,t:0,life:fd,big:FOES[f.type].boss?1.6:1});}sfx('pw_ice');sfx('pw_wind');banner('❄️ Qahraton!','Dushmanlar muzlab qoldi','gift');}
   else if(k==='chaqmoq'){live.sort((a,b)=>b.hp-a.hp).slice(0,8).forEach(f=>{const q=posAt(f.d);damage(f,200*pwUp('chaqmoq'),'magic');f.frz=Math.max(f.frz||0,.4);S.fx.push({kind:'pw',p:'chaqmoq',x:q.x,y:q.y,t:-Math.random()*.15,life:1.1});burst(q.x,q.y,10,['#ffffff','#fff6a0','#9fd8ff'],3,.05,1.2);});S.shake=.6;sfx('pw_thunder');sfx('pw_strike');}
   else if(k==='humo'){S.humo=10*pwUp('humo');sfx('pw_humo');sfx('pw_wing');S.fx.push({kind:'pw',p:'humo',t:0,life:2.6});for(const t of S.towers)S.fx.push({kind:'pw',p:'pat',x:t.c+.5,y:t.r+.3,t:-.3-Math.random()*1.4,life:1.1,rot:Math.random()*6});banner('🪶 Humo duosi!','Minoralar '+Math.round(10*pwUp('humo'))+' soniya tez otadi','gift');}
-  else if(k==='yordam'){let bd=0,bv=1e9;for(let d=0;d<total;d+=.1){const q=posAt(d);const v=Math.hypot(q.x-x,q.y-y);if(v<bv){bv=v;bd=d;}}const me=S.hero?heroK(S.hero):(typeof pendHero!=='undefined'&&pendHero)||'alp';const ks=HORD.filter(h=>h!==me);S.allies=(S.allies||[]).concat(ks.map((hk,i)=>({k:hk,post:Math.max(0,Math.min(total-.5,bd+(i-(ks.length-1)/2)*.6)),pd:Math.max(0,Math.min(total-.5,bd+(i-(ks.length-1)/2)*.6)),t:0,life:8*pwUp('yordam'),cd:Math.random()*.4,kick:0,face:1,ph:Math.random()*6,mv:0,i,dmg:HERO_LV[5].dmg*HEROES[hk].dm,rng:hk==='barchin'?2.4:.4})));const q=posAt(bd);S.fx.push({kind:'pw',p:'yordam',x:q.x,y:q.y,t:0,life:.75});burst(q.x,q.y,20,['#ffd34d','#f2b632','#c8944a'],3,.05,-1);sfx('pw_horn');setTimeout(()=>sfx('pw_cry'),500);banner('🛡️ Qahramonlar yordamga keldi!',Math.round(8*pwUp('yordam'))+' soniya birga jang qilishadi','gift');}
+  else if(k==='yordam'){let bd=0,bv=1e9;for(let d=0;d<total;d+=.1){const q=posAt(d);const v=Math.hypot(q.x-x,q.y-y);if(v<bv){bv=v;bd=d;}}const me=S.hero?heroK(S.hero):(typeof pendHero!=='undefined'&&pendHero)||'alp';const ks=HORD.filter(h=>h!==me&&owned(h));S.allies=(S.allies||[]).concat(ks.map((hk,i)=>({k:hk,post:Math.max(0,Math.min(total-.5,bd+(i-(ks.length-1)/2)*.6)),pd:Math.max(0,Math.min(total-.5,bd+(i-(ks.length-1)/2)*.6)),t:0,life:8*pwUp('yordam'),cd:Math.random()*.4,kick:0,face:1,ph:Math.random()*6,mv:0,i,dmg:HERO_LV[5].dmg*HEROES[hk].dm,rng:hk==='barchin'?2.4:.4})));const q=posAt(bd);S.fx.push({kind:'pw',p:'yordam',x:q.x,y:q.y,t:0,life:.75});burst(q.x,q.y,20,['#ffd34d','#f2b632','#c8944a'],3,.05,-1);sfx('pw_horn');setTimeout(()=>sfx('pw_cry'),500);banner('🛡️ Qahramonlar yordamga keldi!',Math.round(8*pwUp('yordam'))+' soniya birga jang qilishadi','gift');}
   pwUi(1);}
 function pwTick(dt){S.pwcd=S.pwcd||{};allyTick(dt);if(S.pwq&&S.pwq.length){for(const q of S.pwq)q.t-=dt;const due=S.pwq.filter(q=>q.t<=0);S.pwq=S.pwq.filter(q=>q.t>0);due.forEach(q=>q.fn());}if(S.state==='wave')for(const k in S.pwcd){const o=S.pwcd[k];S.pwcd[k]=Math.max(0,o-dt);if(o>0&&S.pwcd[k]<=0)sfx('pw_ready');}if(S.humo>0)S.humo-=dt;pwUiT-=dt;if(pwUiT<=0){pwUiT=.2;pwUi();}}
 function pwUi(){const el=$('pw');if(!el)return;if(el._k===undefined||el._k!==pwList().map(p=>p.k).join(','))pwBuild();{const r=cv.getBoundingClientRect(),sr=$('stage').getBoundingClientRect();if(r.width>0){el.style.right=Math.max(4,sr.right-r.right+4)+'px';el.style.top=Math.round(r.top-sr.top+r.height*.24)+'px';}}const on=!!S&&(S.state==='wave'||S.state==='idle')&&pwList().length>0;el.classList.toggle('hide',!on);if(!S)return;for(const p of pwList()){const b=$('pw_'+p.k),c=(S.pwcd||{})[p.k]||0;b.style.setProperty('--p',Math.min(1,c/(p.cd*pwCdMul(p.k))).toFixed(3));b.querySelector('.cdt').textContent=c>0?Math.ceil(c):'';{const rd=c<=0&&S.state==='wave';if(rd&&b.dataset.r==='0'){b.classList.add('pop');setTimeout(()=>b.classList.remove('pop'),720);}b.dataset.r=rd?'1':'0';b.classList.toggle('rdy',rd&&!b.classList.contains('pop'));}b.classList.toggle('arm',pwArm===p.k);}}
@@ -2030,7 +2053,7 @@ document.querySelectorAll('#diff button').forEach(b=>b.onclick=()=>{diff=+b.data
 const HROLE={alp:'Yaqin jangchi',afandi:'Hiylakor',barchin:'Kamonchi',gorogli:'Otliq',tomaris:'Sarkarda'};
 const HCOL={alp:'#e0452c',afandi:'#2fa25c',barchin:'#8b55e0',gorogli:'#2e7fe6',tomaris:'#e88d1c'};
 function renderHeroesL(){if(!S||S.state==='end')hudPre();const el=$('heroesL');
-  el.innerHTML=HORD.map(k=>{const H=HEROES[k];return '<div class="hcd" data-h="'+k+'" style="--hc:'+HCOL[k]+'"><img src="img/hero-'+k+'-menu.png" alt=""><div class="hcn"><b>'+H.n+'</b><i>'+HROLE[k]+'</i></div></div>';}).join('');
+  el.innerHTML=HORD.map(k=>{const H=HEROES[k];return '<div class="hcd" data-h="'+k+'" style="--hc:'+HCOL[k]+'"><img src="img/hero-'+k+'-menu.png" alt="">'+(owned(k)?'':'<span class="hprem">🔒 Premium</span>')+'<div class="hcn"><b>'+H.n+'</b><i>'+HROLE[k]+'</i></div></div>';}).join('');
   el.querySelectorAll('.hcd').forEach((c,j)=>c.onclick=()=>{if(j!==hIdx())hTo(j,1);});
   $('hDots').innerHTML=HORD.map(()=>'<span></span>').join('');const idx=Math.max(0,HORD.indexOf(pendHero));hInfoK=null;requestAnimationFrame(()=>{hTo(idx,0);hDot();});}
 let hInfoK=null;
@@ -2122,11 +2145,18 @@ $('cUp').onclick=upOpen;
 $('upX').onclick=()=>{sfx('tap');$('ovUp').classList.add('hide');upBadge();};
 $('upTH').onclick=()=>{upTab='h';sfx('tap');upR();};
 $('upTP').onclick=()=>{upTab='p';sfx('tap');upR();};
+
+let buyK=null,buyCb=null;
+function buyOpen(k,cb){const P=PREM[k];if(!P)return;buyK=k;buyCb=cb||null;$('buyImg').src=P.img;$('buyN').textContent=P.n;$('buyD').textContent=P.d;$('buyMsg').textContent='';$('ovBuy').classList.remove('hide');}
+function buyDone(k){try{localStorage.setItem('qp_own_'+k,'1');}catch(e){}$('ovBuy').classList.add('hide');sfx('up');setTimeout(()=>sfx('h_pick'),180);const cb=buyCb;buyCb=null;if(cb)cb();}
+$('buyGo').onclick=()=>{sfx('tap');if(window.QPPay&&typeof window.QPPay.buy==='function'){window.QPPay.buy(buyK).then(ok=>{if(ok)buyDone(buyK);else $('buyMsg').textContent="Xarid bekor qilindi.";}).catch(()=>{$('buyMsg').textContent="Xaridda xatolik. Keyinroq urinib ko'ring.";});return;}$('buyMsg').textContent="To'lov Play Market ilovasida ishlaydi. Hozircha sinov uchun pastdagi tugma bilan oching.";};
+$('buyTest').onclick=()=>buyDone(buyK);
+$('buyX').onclick=()=>{sfx('tap');$('ovBuy').classList.add('hide');buyCb=null;};
 $('mbBack').onclick=()=>{sfx('tap');$('ovStart').classList.remove('help');mbDiffSet();};
 document.querySelectorAll('#diff button').forEach(b=>b.addEventListener('click',mbDiffSet));
 $('bNext').onclick=()=>{$('ovStart').classList.remove('help');unlock();sfx('tap');$('ovStart').classList.add('hide');renderHeroesL();$('ovHero').classList.remove('hide');};
 function startGame(){unlock();master=CITIES[city].m;setMap(CITIES[city].k);music('game');$('ovHero').classList.add('hide');$('ovMaster').classList.add('hide');paused=false;newGame();resize();banner('<img class="bp" src="'+HPOR(pendHero)+'">Oila shaharga shoshilmoqda...',CITIES[city].n+' · '+MASTERS[master].n+' kutmoqda');}
-$('bHeroNext').onclick=()=>{hDot();sfx('h_pick');startGame();};
+$('bHeroNext').onclick=()=>{hDot();if(!owned(pendHero)){sfx('no');buyOpen(pendHero,()=>{renderHeroesL();});return;}sfx('h_pick');startGame();};
 $('heroesL').addEventListener('scroll',hDot,{passive:true});$('hPrev').onclick=()=>hGo(-1);$('hNext').onclick=()=>hGo(1);
 $('bPlay').onclick=()=>{unlock();sfx('tap');$('ovMaster').classList.add('hide');if(!S||!S.pickMaster){startGame();return;}S.pickMaster=false;paused=false;{const MM=MASTERS[master];document.documentElement.style.setProperty('--mcol',MM.col);document.documentElement.style.setProperty('--mglow',MM.col+'99');}S.amb=[];banner((IMG['ustoz-'+master]?'<img class="bp" src="img/ustoz-'+master+'.png">':'')+MASTERS[master].e+' '+MASTERS[master].n+' siz bilan!','Darvoza yopildi! Endi shaharni dushmandan himoya qil!');setGo();updHud();};
 // ---- Shaharlar xaritasi (ketma-ket ochiladi) ----
@@ -2146,10 +2176,11 @@ function cMed(k){const i={lock:4,done:5}[k]??(k-1);return '<i class="cmi" style=
 function renderCity(){const pr=cProg();for(let i=0;i<3;i++)cRoute(i,i<pr&&i!==cJust,0);
   $('cseals').innerHTML='<b>Muhrlar</b>'+CITIES.map((c,i)=>'<div class="cslot'+(i<pr&&i!==cJust?' got':'')+'" id="cslot'+i+'" style="left:'+[39,54.6,70.3,86][i]+'%"><img src="img/emblem-'+c.m+'.png" alt=""></div>').join('');
   $('cpins').innerHTML=CITIES.map((c,i)=>{const lock=i>pr||(i===pr&&cJust===i-1&&cJust>=0),done=i<pr,st=cStars(i);const p=cPos(c.x,c.y);
-    return '<button class="cpin'+(lock?' lock':done?' done':' cur')+'" id="cpin'+i+'" style="--i:'+i+';left:'+p.left+';top:'+p.top+'">'+(done&&st?'<span class="cst'+(i===cJust?' cnew':'')+'">'+[0,1,2].map(j=>'<img src="img/ic-yulduz.png" style="--j:'+j+'" class="'+(j<st?'':'off')+'" alt="">').join('')+'</span>':'')+'<span class="cm">'+cMed(lock?'lock':done?'done':(i+1))+'</span><span class="cn">'+(i+1)+'. '+c.n+'</span></button>';}).join('');
+    return '<button class="cpin'+(lock?' lock':done?' done':' cur')+'" id="cpin'+i+'" style="--i:'+i+';left:'+p.left+';top:'+p.top+'">'+(done&&st?'<span class="cst'+(i===cJust?' cnew':'')+'">'+[0,1,2].map(j=>'<img src="img/ic-yulduz.png" style="--j:'+j+'" class="'+(j<st?'':'off')+'" alt="">').join('')+'</span>':'')+'<span class="cm">'+cMed(lock?'lock':done?'done':(i+1))+'</span><span class="cn">'+(i+1)+'. '+c.n+'</span>'+(owned(c.k)?'':'<span class="cprem">🔒 Premium</span>')+'</button>';}).join('');
   CITIES.forEach((c,i)=>$('cpin'+i).onclick=()=>cTap(i));upBadge();}
 function cToast(t){const e=$('ctoast');e.textContent=t;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),1800);}
 function cTap(i){unlock();const pr=cProg();
+  if(i<=pr&&!owned(CITIES[i].k)){sfx('tap');buyOpen(CITIES[i].k,()=>{renderCity();cTap(i);});return;}
   if(i>pr){sfx('tap');const b=$('cpin'+i);b.classList.remove('shk');void b.offsetWidth;b.classList.add('shk');cToast('Avval '+CITIES[pr].n+'ni himoya qil!');return;}
   sfx('tap');cPick=i;document.querySelectorAll('.cpin').forEach((b,j)=>b.classList.toggle('pick',j===i));
   const c=CITIES[i],M=MASTERS[c.m],T=TOWERS[M.u];$('ciN').textContent=c.n;$('ciD').textContent=c.d;const st=cStars(i);
