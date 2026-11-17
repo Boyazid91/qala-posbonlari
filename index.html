@@ -820,6 +820,11 @@ i.cn{filter:none!important}
 #tutH.tl{animation:tutL .55s ease-in-out infinite alternate}
 @keyframes tutU{from{transform:translateY(-12px)}to{transform:translateY(0)}}
 @keyframes tutL{from{transform:translateX(-12px) rotate(-90deg)}to{transform:translateX(0) rotate(-90deg)}}
+
+/* v306 */
+#tutC{position:fixed;z-index:60;pointer-events:none;display:none;filter:drop-shadow(0 3px 3px #0008);animation:tutU .55s ease-in-out infinite alternate}
+#ltoast{position:fixed;left:50%;bottom:18%;transform:translate(-50%,20px);z-index:80;padding:10px 16px;border-radius:12px;background:#3b2412f2;border:2px solid #c9a35a;color:#ffd34d;font-weight:800;font-size:15px;opacity:0;pointer-events:none;transition:.25s;max-width:90vw;text-align:center}
+#ltoast.show{opacity:1;transform:translate(-50%,0)}
 </style>
 <link rel="manifest" href="manifest.json"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Qal'a"><link rel="apple-touch-icon" href="img/icon-180.png">
 </head>
@@ -1699,7 +1704,10 @@ const HORD=['gorogli','barchin','afandi','alp','tomaris'];
 /* v302: premium (Play Market'da pullik): Alpomish, To'maris, Buxoro va Samarqand xaritalari. To'lov hali ulanmagan: sotib olish oynasida sinov uchun ochish tugmasi bor. */
 const PREM={alp:{n:'Alpomish',img:'img/hero-alp-menu.png',d:"Afsonaviy botir: eng ko'p jon, keng zarba, jasorat aurasi va bo'ron."},tomaris:{n:"To'maris",img:'img/hero-tomaris-menu.png',d:"Sarkarda malika: bayrog'i atrofidagi minoralar tezroq otadi, saklar yordamga keladi."},buxoro:{n:'Buxoro xaritasi',img:'img/emblem-nur.png',d:"3-shahar: Qum ajinasi, Katta jin va Chayonlar shohiga qarshi jang."},samarqand:{n:'Samarqand xaritasi',img:'img/emblem-olov.png',d:"Oxirgi darvoza: Uch boshli ajdarho va Devlar shohi. O'yin yakuni shu yerda."}};
 /* v304: hamma narsa yana bepul (Boyazid). Pullik kod uxlab turadi. */
-function owned(k){return true;if(!PREM[k])return true;try{return localStorage.getItem('qp_own_'+k)==='1';}catch(e){return false;}}
+/* v306: To'maris Xivaga, Alpomish Buxoroga yetganda ochiladi */
+const HGATE={tomaris:1,alp:2},HGTXT={tomaris:"Xivaga yetganda ochiladi",alp:"Buxoroga yetganda ochiladi"};
+function lockToast(k){let e=$('ltoast');if(!e){e=document.createElement('div');e.id='ltoast';document.body.appendChild(e);}e.textContent='🔒 '+HEROES[k].n+': '+HGTXT[k];e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),2200);}
+function owned(k){if(HGATE[k]!=null)return cProg()>=HGATE[k];return true;if(!PREM[k])return true;try{return localStorage.getItem('qp_own_'+k)==='1';}catch(e){return false;}}
 function heroFree(k){return owned(k);}
 const HSZ={barchin:{idle:.8,walk:.8,run:.74,attack:.8,attack2:.8,dead:.4},gorogli:{idle:1,walk:1,run:.8,attack:1.02,attack2:1.08,dead:.85},tomaris:{idle:.95,walk:.95,run:.92,attack:.92,attack2:.98,dead:.82},afandi:{idle:.86,walk:.66,run:.66,attack:.7,attack2:.7,dead:.72}};
 let pendHero='gorogli',pickSel=null;
@@ -1763,9 +1771,9 @@ function renderHero(){const h=S.hero,K=heroK(h),H=HEROES[K],L=HL(),N=HERO_LV[h.l
   sh.classList.add('show');}
 function renderPick(swap){const sh=$('sheet');heroSheet=false;sel=null;
   sh.innerHTML='<h3>'+(swap?'Qaysi qahramon bilan almashtiramiz?':'Qaysi qahramonni chaqiramiz?')+'</h3><div class="cards hcards">'+HORD.map(k=>{const H=HEROES[k],lock=S.wave<H.w||!owned(k),cur=swap&&S.hero&&heroK(S.hero)===k;
-    return '<button class="card'+(pickSel===k?' pick':'')+(lock||cur?' off':'')+'" data-k="'+k+'"><div class="e"><img src="'+HPOR(k)+'" alt="">'+(lock?'<i class="lk">🔒</i>':'')+'</div><div class="n">'+H.n+'</div><div class="c">'+(!owned(k)?'Premium':lock?H.w+"-to'lqin":cur?'hozir':'❤️'+H.hp)+'</div></button>';}).join('')+'</div><p id="tip">'+(pickSel?'':'Qahramonni tanlang: har birining o\'z kuchi bor.')+'</p>';
+    return '<button class="card'+(pickSel===k?' pick':'')+(lock||cur?' off':'')+'" data-k="'+k+'"><div class="e"><img src="'+HPOR(k)+'" alt="">'+(lock?'<i class="lk">🔒</i>':'')+'</div><div class="n">'+H.n+'</div><div class="c">'+(!owned(k)?'🔒 '+(HGATE[k]===1?'Xiva':'Buxoro'):lock?H.w+"-to'lqin":cur?'hozir':'❤️'+H.hp)+'</div></button>';}).join('')+'</div><p id="tip">'+(pickSel?'':'Qahramonni tanlang: har birining o\'z kuchi bor.')+'</p>';
   sh.querySelectorAll('.card').forEach(b=>{b.onclick=()=>{const k=b.dataset.k,H=HEROES[k];
-    if(!owned(k)){sfx('no');buyOpen(k,()=>renderPick(swap));return;}
+    if(!owned(k)){sfx('no');lockToast(k);return;}
     if(S.wave<H.w){$('tip').innerHTML='🔒 <b>'+H.n+'</b> '+H.w+'-to\'lqindan ochiladi. '+H.d;sfx('no');return;}
     if(swap&&heroK(S.hero)===k){$('tip').textContent='Bu qahramon hozir jangda.';sfx('no');return;}
     if(pickSel!==k){pickSel=k;renderPick(swap);$('tip').innerHTML='<b>'+H.n+':</b> '+H.d+' <b>Tanlash uchun yana bos.</b>';sfx('tap');return;}
@@ -2059,6 +2067,14 @@ function pwFire(k,x,y){const p=PW.find(q=>q.k===k);S.pwcd=S.pwcd||{};S.pwcd[k]=p
   else if(k==='yordam'){let bd=0,bv=1e9;for(let d=0;d<total;d+=.1){const q=posAt(d);const v=Math.hypot(q.x-x,q.y-y);if(v<bv){bv=v;bd=d;}}const me=S.hero?heroK(S.hero):(typeof pendHero!=='undefined'&&pendHero)||'alp';const ks=HORD.filter(h=>h!==me&&owned(h));S.allies=(S.allies||[]).concat(ks.map((hk,i)=>({k:hk,post:Math.max(0,Math.min(total-.5,bd+(i-(ks.length-1)/2)*.6)),pd:Math.max(0,Math.min(total-.5,bd+(i-(ks.length-1)/2)*.6)),t:0,life:8*pwUp('yordam'),cd:Math.random()*.4,kick:0,face:1,ph:Math.random()*6,mv:0,i,dmg:HERO_LV[5].dmg*HEROES[hk].dm,rng:hk==='barchin'?2.4:.4})));const q=posAt(bd);S.fx.push({kind:'pw',p:'yordam',x:q.x,y:q.y,t:0,life:.75});burst(q.x,q.y,20,['#ffd34d','#f2b632','#c8944a'],3,.05,-1);sfx('pw_horn');setTimeout(()=>sfx('pw_cry'),500);banner('🛡️ Qahramonlar yordamga keldi!',Math.round(8*pwUp('yordam'))+' soniya birga jang qilishadi','gift');}
   pwUi(1);}
 /* v305: birinchi xaritada (Qo'qon) barmoq qahramon tugmasini va tayyor ilohiy kuchni ko'rsatadi */
+/* v306: shaharlar xaritasida tanga yetsa barmoq kuchaytirish belgisini ko'rsatadi */
+function tutCity(){let el=$('tutC');const tg=$('cUp');let on=false;
+ try{on=!$('ovCity').classList.contains('hide')&&[...document.querySelectorAll('.ov:not(.hide)')].every(o=>o.id==='ovCity')&&!($('cinfo')&&$('cinfo').classList.contains('show'))&&upCanAny();}catch(e){}
+ if(!on){if(el)el.style.display='none';return;}
+ if(!el){el=document.createElement('img');el.id='tutC';el.className='tu';el.src='img/ui-pointer.png';el.alt='';document.body.appendChild(el);}
+ const r=tg.getBoundingClientRect();if(!r.width||!el.naturalWidth){el.style.display='none';return;}
+ const w=Math.max(40,r.width*.55),h=w*el.naturalHeight/el.naturalWidth;el.style.width=w+'px';el.style.left=Math.round(r.left+r.width/2-w/2)+'px';el.style.top=Math.round(r.top-h+r.height*.15)+'px';el.style.display='block';}
+setInterval(tutCity,150);
 function tutHand(){let el=$('tutH');if(!el){el=document.createElement('img');el.id='tutH';el.src='img/ui-pointer.png';el.alt='';$('stage').appendChild(el);}
  let tg=null,sd='up';
  if(S&&mapKey==='qoqon'&&(S.state==='wave'||S.state==='idle')&&!document.querySelector('.ov:not(.hide)')&&!heroSheet&&!$('sheet').classList.contains('show')){
@@ -2118,7 +2134,7 @@ document.querySelectorAll('#diff button').forEach(b=>b.onclick=()=>{diff=+b.data
 const HROLE={alp:'Yaqin jangchi',afandi:'Hiylakor',barchin:'Kamonchi',gorogli:'Otliq',tomaris:'Sarkarda'};
 const HCOL={alp:'#e0452c',afandi:'#2fa25c',barchin:'#8b55e0',gorogli:'#2e7fe6',tomaris:'#e88d1c'};
 function renderHeroesL(){if(!S||S.state==='end')hudPre();const el=$('heroesL');
-  el.innerHTML=HORD.map(k=>{const H=HEROES[k];return '<div class="hcd" data-h="'+k+'" style="--hc:'+HCOL[k]+'"><img src="img/hero-'+k+'-menu.png" alt="">'+(owned(k)?'':'<span class="hprem">🔒 Premium</span>')+'<div class="hcn"><b>'+H.n+'</b><i>'+HROLE[k]+'</i></div></div>';}).join('');
+  el.innerHTML=HORD.map(k=>{const H=HEROES[k];return '<div class="hcd" data-h="'+k+'" style="--hc:'+HCOL[k]+'"><img src="img/hero-'+k+'-menu.png" alt="">'+(owned(k)?'':'<span class="hprem">🔒 '+(HGATE[k]===1?'Xivada':'Buxoroda')+' ochiladi</span>')+'<div class="hcn"><b>'+H.n+'</b><i>'+HROLE[k]+'</i></div></div>';}).join('');
   el.querySelectorAll('.hcd').forEach((c,j)=>c.onclick=()=>{if(j!==hIdx())hTo(j,1);});
   $('hDots').innerHTML=HORD.map(()=>'<span></span>').join('');const idx=Math.max(0,HORD.indexOf(pendHero));hInfoK=null;requestAnimationFrame(()=>{hTo(idx,0);hDot();});}
 let hInfoK=null;
@@ -2224,7 +2240,7 @@ $('mbBack').onclick=()=>{sfx('tap');$('ovStart').classList.remove('help');mbDiff
 document.querySelectorAll('#diff button').forEach(b=>b.addEventListener('click',mbDiffSet));
 $('bNext').onclick=()=>{$('ovStart').classList.remove('help');unlock();sfx('tap');$('ovStart').classList.add('hide');renderHeroesL();$('ovHero').classList.remove('hide');};
 function startGame(){unlock();master=CITIES[city].m;setMap(CITIES[city].k);music('game');$('ovHero').classList.add('hide');$('ovMaster').classList.add('hide');paused=false;newGame();resize();banner('<img class="bp" src="'+HPOR(pendHero)+'">Oila shaharga shoshilmoqda...',CITIES[city].n+' · '+MASTERS[master].n+' kutmoqda');}
-$('bHeroNext').onclick=()=>{hDot();if(!owned(pendHero)){sfx('no');buyOpen(pendHero,()=>{renderHeroesL();});return;}sfx('h_pick');startGame();};
+$('bHeroNext').onclick=()=>{hDot();if(!owned(pendHero)){sfx('no');lockToast(pendHero);return;}sfx('h_pick');startGame();};
 $('heroesL').addEventListener('scroll',hDot,{passive:true});$('hPrev').onclick=()=>hGo(-1);$('hNext').onclick=()=>hGo(1);
 $('bPlay').onclick=()=>{unlock();sfx('tap');$('ovMaster').classList.add('hide');if(!S||!S.pickMaster){startGame();return;}S.pickMaster=false;paused=false;{const MM=MASTERS[master];document.documentElement.style.setProperty('--mcol',MM.col);document.documentElement.style.setProperty('--mglow',MM.col+'99');}S.amb=[];banner((IMG['ustoz-'+master]?'<img class="bp" src="img/ustoz-'+master+'.png">':'')+MASTERS[master].e+' '+MASTERS[master].n+' siz bilan!','Darvoza yopildi! Endi shaharni dushmandan himoya qil!');setGo();updHud();};
 // ---- Shaharlar xaritasi (ketma-ket ochiladi) ----
