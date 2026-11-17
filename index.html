@@ -2068,8 +2068,11 @@ function pwFire(k,x,y){const p=PW.find(q=>q.k===k);S.pwcd=S.pwcd||{};S.pwcd[k]=p
   pwUi(1);}
 /* v305: birinchi xaritada (Qo'qon) barmoq qahramon tugmasini va tayyor ilohiy kuchni ko'rsatadi */
 /* v306: shaharlar xaritasida tanga yetsa barmoq kuchaytirish belgisini ko'rsatadi */
+/* v307: har bir barmoq faqat bir marta: o'yinchi bosgach qaytib chiqmaydi */
+function tutDone(k){try{return localStorage.getItem('qp_tut_'+k)==='1';}catch(e){return false;}}
+document.addEventListener('pointerdown',e=>{const t=e.target&&e.target.closest?e.target:null;if(!t)return;const k=t.closest('#bHero')?'hero':t.closest('.pwb')?'pw':t.closest('#cUp')?'up':null;if(k&&!tutDone(k)){try{localStorage.setItem('qp_tut_'+k,'1');}catch(_){}}},true);
 function tutCity(){let el=$('tutC');const tg=$('cUp');let on=false;
- try{on=!$('ovCity').classList.contains('hide')&&[...document.querySelectorAll('.ov:not(.hide)')].every(o=>o.id==='ovCity')&&!($('cinfo')&&$('cinfo').classList.contains('show'))&&upCanAny();}catch(e){}
+ try{on=!$('ovCity').classList.contains('hide')&&[...document.querySelectorAll('.ov:not(.hide)')].every(o=>o.id==='ovCity')&&!($('cinfo')&&$('cinfo').classList.contains('show'))&&!tutDone('up')&&upCanAny();}catch(e){}
  if(!on){if(el)el.style.display='none';return;}
  if(!el){el=document.createElement('img');el.id='tutC';el.className='tu';el.src='img/ui-pointer.png';el.alt='';document.body.appendChild(el);}
  const r=tg.getBoundingClientRect();if(!r.width||!el.naturalWidth){el.style.display='none';return;}
@@ -2078,8 +2081,8 @@ setInterval(tutCity,150);
 function tutHand(){let el=$('tutH');if(!el){el=document.createElement('img');el.id='tutH';el.src='img/ui-pointer.png';el.alt='';$('stage').appendChild(el);}
  let tg=null,sd='up';
  if(S&&mapKey==='qoqon'&&(S.state==='wave'||S.state==='idle')&&!document.querySelector('.ov:not(.hide)')&&!heroSheet&&!$('sheet').classList.contains('show')){
-  if(!S.hero&&S.wave>=3&&!heroMode)tg=$('bHero');
-  else if(!pwArm&&!heroMode){const b=document.querySelector('#pw:not(.hide) .pwb.rdy');if(b){tg=b;sd='lf';}}}
+  if(!S.hero&&S.wave>=3&&!heroMode&&!tutDone('hero'))tg=$('bHero');
+  else if(!pwArm&&!heroMode&&!tutDone('pw')){const b=document.querySelector('#pw:not(.hide) .pwb.rdy');if(b){tg=b;sd='lf';}}}
  if(!tg||!el.naturalWidth){if(el.style.display!=='none')el.style.display='none';return;}
  const r=tg.getBoundingClientRect(),sr=$('stage').getBoundingClientRect();if(!r.width){el.style.display='none';return;}
  const w=sd==='up'?54:46,h=w*el.naturalHeight/el.naturalWidth;let L,T;
@@ -2195,7 +2198,7 @@ $('bContNew').onclick=()=>{sfx('tap');$('ovCont').classList.add('hide');runClear
 $('mbDiff').onclick=()=>{unlock();const b=document.querySelectorAll('#diff button')[(diff+1)%3];b.onclick();mbDiffSet();};
 $('mbHelp').onclick=()=>{unlock();sfx('tap');$('ovStart').classList.add('help');};
 $('bUpd').onclick=async()=>{sfx('tap');const m=$('updMsg');m.textContent="Yangi versiya yuklanyapti... natijalaring saqlanib qoladi";try{if(navigator.serviceWorker){const rs=await navigator.serviceWorker.getRegistrations();await Promise.all(rs.map(r=>r.update().catch(()=>{})));}if(window.caches){const ks=await caches.keys();await Promise.all(ks.filter(k=>/^qala/.test(k)).map(k=>caches.delete(k)));}}catch(e){}setTimeout(()=>{const u=location.pathname+'?v='+Date.now()+location.hash;location.replace(u);},400);};
-$('bReset').onclick=()=>{const b=$('bReset'),sp=b.querySelector('span');if(!b._arm){sfx('tap');b._arm=1;b._t0=sp.textContent;sp.textContent="⚠️ Rostdan o'chirilsinmi? Yana bosing";b.style.background='#ffd9d0';b.style.borderColor='#c0392b';$('updMsg').textContent="Yulduzlar, shaharlar, ilohiy kuchlar, tangalar va kuchaytirishlar o'chadi";clearTimeout(b._tm);b._tm=setTimeout(()=>{b._arm=0;sp.textContent=b._t0;b.style.background='';b.style.borderColor='';$('updMsg').textContent='';},5000);return;}clearTimeout(b._tm);sfx('tap');try{Object.keys(localStorage).filter(k=>/^qp_(best_|cst_|prog|pwc_|run|tanga|up_)/.test(k)).forEach(k=>localStorage.removeItem(k));}catch(e){}for(const k in UPM)delete UPM[k];resetDone=1;sp.textContent="✅ Natijalar tozalandi";$('updMsg').textContent="O'yin qaytadan yuklanyapti...";setTimeout(()=>location.reload(),700);};
+$('bReset').onclick=()=>{const b=$('bReset'),sp=b.querySelector('span');if(!b._arm){sfx('tap');b._arm=1;b._t0=sp.textContent;sp.textContent="⚠️ Rostdan o'chirilsinmi? Yana bosing";b.style.background='#ffd9d0';b.style.borderColor='#c0392b';$('updMsg').textContent="Yulduzlar, shaharlar, ilohiy kuchlar, tangalar va kuchaytirishlar o'chadi";clearTimeout(b._tm);b._tm=setTimeout(()=>{b._arm=0;sp.textContent=b._t0;b.style.background='';b.style.borderColor='';$('updMsg').textContent='';},5000);return;}clearTimeout(b._tm);sfx('tap');try{Object.keys(localStorage).filter(k=>/^qp_(best_|cst_|prog|pwc_|run|tanga|up_|tut_)/.test(k)).forEach(k=>localStorage.removeItem(k));}catch(e){}for(const k in UPM)delete UPM[k];resetDone=1;sp.textContent="✅ Natijalar tozalandi";$('updMsg').textContent="O'yin qaytadan yuklanyapti...";setTimeout(()=>location.reload(),700);};
 let resetDone=0;
 
 /* v293: qo'shimcha tangalar va abadiy kuchaytirish (qahramonlar, ilohiy kuchlar: 5 darajagacha) */
