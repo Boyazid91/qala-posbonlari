@@ -1641,7 +1641,7 @@ function drawInner(now){const C=CELL;
   if(!S)return;
   if(S.dark>.01){ctx.fillStyle='rgba(12,18,45,'+S.dark.toFixed(3)+')';ctx.fillRect(-XL*C,-(TOP+XT)*C,(COLS+2*XL)*C,(ROWS+TOP+XT)*C);}
   // hero joylash rejimi
-  if(heroMode||(heroSheet&&S.hero&&!S.hero.dead&&!sel&&$('sheet').classList.contains('show'))){/* v318: oddiy oq katakchalar */ctx.save();ctx.lineWidth=Math.max(1.5,C*.045);ctx.strokeStyle='rgba(40,24,6,.35)';for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)if(cellD(c,r)!=null)ctx.strokeRect(c*C+6,r*C+7.5,C-12,C-12);ctx.strokeStyle='rgba(255,255,255,.9)';for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)if(cellD(c,r)!=null)ctx.strokeRect(c*C+6,r*C+6,C-12,C-12);ctx.restore();}
+  if(heroMode||(heroSheet&&S.hero&&!S.hero.dead&&!sel&&$('sheet').classList.contains('show'))){/* v318: oddiy oq katakchalar */ctx.save();ctx.lineWidth=Math.max(1.5,C*.045);ctx.strokeStyle='rgba(40,24,6,.15)';for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)if(cellD(c,r)!=null)ctx.strokeRect(c*C+6,r*C+7.5,C-12,C-12);ctx.strokeStyle='rgba(255,255,255,.45)';for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)if(cellD(c,r)!=null)ctx.strokeRect(c*C+6,r*C+6,C-12,C-12);ctx.restore();}
   if(sel){ctx.save();const R=sel.t?range(sel.t):(sel.preview?TOWERS[sel.preview].range:0);
     if(R){ctx.fillStyle='rgba(255,255,255,.2)';ctx.strokeStyle='rgba(255,255,255,.9)';ctx.lineWidth=2;ctx.beginPath();ctx.arc((sel.c+.5)*C,(sel.r+.5)*C,R*C,0,7);ctx.fill();ctx.stroke();}
     if(!sel.t){ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.setLineDash([6,4]);rr(sel.c*C+3,sel.r*C+3,C-6,C-6,10);ctx.stroke();}ctx.restore();}
