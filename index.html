@@ -1153,7 +1153,7 @@ const WAVE20={qoqon:{n:'SHOHMORON TOJLI ILON',g:[['jodugar',8,.5],['alvasti',8,.
 const WAVE19={qoqon:{n:'Bosslar qaytdi!',g:[['jodugar',8,.5],['malika',1,2],['alvasti',6,.5],['yalmogiz',1,2]],boss:1},xiva:{n:'Bosslar qaytdi!',g:[['bori',8,.4],['boribek',1,2],['loyaskar',6,.6],['loyp',1,2]],boss:1},buxoro:{n:'Bosslar qaytdi!',g:[['chayon',8,.5],['chshoh',1,2],['jin',8,.4],['kjin',1,2]],boss:1},samarqand:{n:'Bosslar qaytdi!',g:[['qaroqchi',8,.5],['ataman',1,2],['dev',4,1],['devbek',1,2]],boss:1}};
 function waveAt(i){return (i===9&&WAVE10[mapKey])||(i===18&&WAVE19[mapKey])||(i===14&&WAVE15[mapKey])||(i===19&&WAVE20[mapKey])||WAVES[i];}
 const ALS=new Set();function lookAlias(){for(const k in FOES){const L=FOES[k].look;if(!L||(IMG['foe-'+k]&&!ALS.has('foe-'+k)))continue;for(const n of Object.keys(IMG))if(n==='foe-'+L||n.startsWith('foe-'+L+'-')){const key='foe-'+k+n.slice(4+L.length);if(!IMG[key]||ALS.has(key)){IMG[key]=IMG[n];ALS.add(key);}}if(!FOEFR[k])FOEFR[k]=FOEFR[L];}}
-const DIFF=[{hp:.8,lives:20,coins:200,n:'Oson'},{hp:1.15,lives:10,coins:180,n:"O'rta"},{hp:1.2,lives:3,coins:220,n:'Qahramon'}];
+const DIFF=[{hp:.8,lives:20,coins:200,n:'Oson'},{hp:1.15,lives:10,coins:200,n:"O'rta"},{hp:1.2,lives:3,coins:200,n:'Qahramon'}];
 
 // ---- Yo'l ----
 const segs=[];let total=0;
