@@ -852,6 +852,7 @@ i.cn{filter:none!important}
 #ovHU p{margin:6px 4px 10px;font-size:14px;line-height:1.35;color:#ffe8b8}
 @keyframes huShake{0%,100%{transform:translate(-50%,-50%) rotate(0)}20%{transform:translate(-50%,-50%) rotate(-12deg)}40%{transform:translate(-50%,-50%) rotate(12deg)}60%{transform:translate(-50%,-50%) rotate(-10deg)}80%{transform:translate(-50%,-50%) rotate(8deg)}}
 @keyframes huBreak{0%{transform:translate(-50%,-50%) scale(1);opacity:1}40%{transform:translate(-50%,-50%) scale(1.35) rotate(-8deg);opacity:1}100%{transform:translate(-50%,-10%) scale(.6) rotate(25deg);opacity:0}}
+.pwyn{display:flex;gap:12px;justify-content:center}.pwyn .pwok{margin:10px 0 0;min-width:92px}.pwyn .pwno{background:linear-gradient(#e9dcc0,#b9a37a);box-shadow:0 3px 0 #6b5636;color:#3b2a14}
 </style>
 <link rel="manifest" href="manifest.json"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Qal'a"><link rel="apple-touch-icon" href="img/icon-180.png">
 </head>
@@ -1640,7 +1641,7 @@ function drawInner(now){const C=CELL;
   if(!S)return;
   if(S.dark>.01){ctx.fillStyle='rgba(12,18,45,'+S.dark.toFixed(3)+')';ctx.fillRect(-XL*C,-(TOP+XT)*C,(COLS+2*XL)*C,(ROWS+TOP+XT)*C);}
   // hero joylash rejimi
-  if(heroMode){ctx.save();ctx.fillStyle='rgba(255,214,80,'+(.3+.12*Math.sin(now/200)).toFixed(3)+')';for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)if(cellD(c,r)!=null){rr(c*C+5,r*C+5,C-10,C-10,10);ctx.fill();}ctx.restore();}
+  if(heroMode){/* v317: uzuq chiziqli katakchalar */ctx.save();const al=(.75+.25*Math.sin(now/220)).toFixed(3);ctx.setLineDash([C*.13,C*.09]);ctx.lineDashOffset=-(now/40)%(C*.22);ctx.lineWidth=Math.max(1.5,C*.05);ctx.strokeStyle='rgba(40,24,6,'+(al*.55).toFixed(3)+')';for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)if(cellD(c,r)!=null){ctx.strokeRect(c*C+6,r*C+6+1.5,C-12,C-12);}ctx.strokeStyle='rgba(255,246,214,'+al+')';for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)if(cellD(c,r)!=null){ctx.strokeRect(c*C+6,r*C+6,C-12,C-12);}ctx.restore();}
   if(sel){ctx.save();const R=sel.t?range(sel.t):(sel.preview?TOWERS[sel.preview].range:0);
     if(R){ctx.fillStyle='rgba(255,255,255,.2)';ctx.strokeStyle='rgba(255,255,255,.9)';ctx.lineWidth=2;ctx.beginPath();ctx.arc((sel.c+.5)*C,(sel.r+.5)*C,R*C,0,7);ctx.fill();ctx.stroke();}
     if(!sel.t){ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.setLineDash([6,4]);rr(sel.c*C+3,sel.r*C+3,C-6,C-6,10);ctx.stroke();}ctx.restore();}
@@ -1803,7 +1804,7 @@ function renderHero(){const h=S.hero,K=heroK(h),H=HEROES[K],L=HL(),N=HERO_LV[h.l
     burst(h.c+.5,h.r+.5,22,['#ffd34d','#fff','#f2b632'],2.8,.05,-1);S.fx.push({kind:'ring',x:h.c+.5,y:h.r+.5,r:.9,t:0,life:.45,col:'#ffd34d'});
     S.fx.push({kind:'txt',s:'⬆️ Lv'+h.lvl,x:h.c+.5,y:h.r,t:0,life:1.2,col:'#ffd34d',big:1});if(NN.s&&(K==='alp'||h.lvl===5||h.lvl===10))banner('⚔️ '+H.n+' Lv'+h.lvl,P.p,'gift');updHud();};
   if($('bHRev'))$('bHRev').onclick=()=>{heroRevive();if(!h.dead)renderHero();};
-  $('bHMove').onclick=()=>{if(h.moveCd>0||h.dead){sfx('no');return;}heroMode=true;hideSheet();banner('⚔️ '+H.n+' qayerni qo\'riqlaydi?','Yo\'lakdagi sariq joyga bos');sfx('tap');updHud();};
+  $('bHMove').onclick=()=>{if(h.moveCd>0||h.dead){sfx('no');return;}heroMode=true;hideSheet();sfx('tap');updHud();};
   sh.classList.add('show');}
 function renderPick(swap){const sh=$('sheet');heroSheet=false;sel=null;
   sh.innerHTML='<h3>'+(swap?'Qaysi qahramon bilan almashtiramiz?':'Qaysi qahramonni chaqiramiz?')+'</h3><div class="cards hcards">'+HORD.map(k=>{const H=HEROES[k],lock=S.wave<H.w||!owned(k),cur=swap&&S.hero&&heroK(S.hero)===k;
@@ -1815,7 +1816,7 @@ function renderPick(swap){const sh=$('sheet');heroSheet=false;sel=null;
     if(pickSel!==k){pickSel=k;renderPick(swap);$('tip').innerHTML='<b>'+H.n+':</b> '+H.d+' <b>Tanlash uchun yana bos.</b>';sfx('tap');return;}
     pickSel=null;
     if(swap){const h=S.hero;h.k=k;h.dash=null;h.rain=null;h.dashT=h.rainT=h.trT=h.sakT=0;h.useA2=0;h.hits=0;h.hp=heroMax(h);h.dead=false;h.kick=1;S.saks=[];hideSheet();const q=posAt(h.pd);burst(q.x,q.y,26,['#ffd34d','#fff','#f2b632'],2.8,.05,-1);S.fx.push({kind:'ring',x:q.x,y:q.y,r:1,t:0,life:.5,col:'#ffd34d'});banner('<img class="bp" src="'+HPOR(k)+'">'+H.n+' jangga kirdi!',H.d,'gift');sfx(k==='barchin'?'b_place':'revive');updHud();return;}
-    pendHero=k;heroMode=true;hideSheet();banner('<img class="bp" src="'+HPOR(k)+'">'+H.n+' qayerni qo\'riqlaydi?','Yo\'lakdagi sariq joyga bos');sfx('tap');updHud();};});
+    pendHero=k;heroMode=true;hideSheet();sfx('tap');updHud();};});
   sh.classList.add('show');}
 let fid=0;
 
@@ -2080,7 +2081,8 @@ function pwMenuR(){const own=pwOwned(),z=62/128;$('pwmT').textContent='Ilohiy ku
     // ikkinchi bosish: tanlash
     if(!pwPick.includes(k)){pwPick.push(k);while(pwPick.length>pwNeed())pwPick.shift();}sfx('ult');pwMenuR();if(pwPick.length>=pwNeed())setTimeout(pwMenuDone,850);});
   const P=PW.find(p=>p.k===pwInfoK),I=$('pwmI');
-  if(P){const have=own.includes(P.k),on=pwPick.includes(P.k);I.innerHTML='<b>'+P.n+'</b><span>'+P.d+'</span><em>'+(have?'✓ Ochilgan':on?'✓ Tanlandi':'Tanlash uchun yana bir marta bosing')+'</em>';I.classList.add('show');}
+  if(P){const have=own.includes(P.k),on=pwPick.includes(P.k);I.innerHTML='<b>'+P.n+'</b><span>'+P.d+'</span>'+(have||on?'<em>'+(have?'✓ Ochilgan':'✓ Tanlandi')+'</em>':'<em>Shu kuchni tanlaysizmi?</em><div class="pwyn"><button class="pwok" id="pwY">Ha</button><button class="pwok pwno" id="pwN">Yo\'q</button></div>');I.classList.add('show');
+   if(!have&&!on){$('pwY').onclick=()=>{if(!pwPick.includes(P.k)){pwPick.push(P.k);while(pwPick.length>pwNeed())pwPick.shift();}sfx('ult');pwMenuR();if(pwPick.length>=pwNeed())setTimeout(pwMenuDone,850);};$('pwN').onclick=()=>{sfx('tap');pwInfoK=null;pwMenuR();};}}
   else{I.innerHTML='';I.classList.remove('show');}}
 function pwMenuDone(){if(!pwMenuOpen()||pwPick.length<pwNeed())return;const ck='qp_pwc_'+CITIES[city].k,old=store(ck);store(ck,(old?old.split(',').concat(pwPick):pwPick).join(','));S.pwSel=pwOwned();$('ovPw').classList.add('hide');pwInfoK=null;sfx('pw_ready');pwUi(1);runSave();setGo();
   const p=PW.find(q=>q.k===pwPick[0]);if(p)banner('🌟 '+p.n+' ochildi!','O\'ng tomondagi tugmani bos','gift');}
@@ -2158,16 +2160,17 @@ function allyTick(dt){if(!S.allies||!S.allies.length)return;const live=S.foes.fi
 function allyDraws(DR,C){for(const s of (S.allies||[])){const q0=posAt(s.pd);DR.push({y:q0.y+.2,f:()=>{const q=posAt(s.pd);let key,hs,nat;if(s.k==='alp'){key=s.kick>.2?'hero-attack':s.mv&&Math.sin(s.ph)>0?'hero-walk':'hero-idle';hs=s.kick>.2?.74:.82;nat=1;}else{const PF=HEROES[s.k].img,Z=HSZ[s.k];let fr=s.kick>.2?(IMG[PF+'-attack']?'attack':'attack2'):s.mv?(Math.sin(s.ph)>0?'walk':'idle'):'idle';key=PF+'-'+fr;hs=Z[fr]||.8;nat=-1;}const im=IMG[key];if(!im)return;const hh=C*hs,w=hh*im.width/im.height;const a=Math.max(0,Math.min(1,s.t*3,(s.life-s.t)*2));ctx.save();ctx.globalAlpha=a;ctx.translate(q.x*C+((s.i%2)-.5)*C*.25,q.y*C+C*.22);if(s.face*nat<0)ctx.scale(-1,1);ctx.drawImage(im,-w/2,-hh,w,hh);ctx.restore();}});}}
 cv.addEventListener('pointerdown',e=>{if(!S||S.state==='end')return;if(S.state==='intro'){unlock();skipIntro();return;}unlock();const b=cv.getBoundingClientRect();const c=Math.floor((e.clientX-b.left)/CELL-XL),r=Math.floor((e.clientY-b.top)/CELL-TOP-XT);if(pwArm){if(S.state==='wave')pwFire(pwArm,(e.clientX-b.left)/CELL-XL,(e.clientY-b.top)/CELL-TOP-XT);else pwArm=null;return;}
   const XC=Math.floor(XL+.02);if(c<-XC||r<0||c>=COLS+XC||r>=ROWS){sel=null;hideSheet();return;}
+  if(heroMode&&S.hero&&S.hero.c===c&&S.hero.r===r){heroMode=false;sel=null;renderHero();sfx('tap');updHud();return;}
   if(heroMode){const pd=cellD(c,r);if(pd!=null){if(!S.hero){S.hero={k:pendHero||'alp',c,r,post:pd,pd,x:c+.5,y:r+.5,hp:160,lvl:1,cd:0,kick:1,face:1,moveCd:0,hits:0,storm:0};S.hero.hp=heroMax(S.hero);}else{Object.assign(S.hero,{c,r,post:pd,pd,x:c+.5,y:r+.5});S.hero.moveCd=4;S.hero.kick=1;}
       heroMode=false;{const hk=heroK(S.hero);if(hk==='afandi')sfx('a_laugh');else if(hk==='tomaris')sfx('t_cry');else if(hk==='gorogli'){sfx('g_neigh');sfx('g_gallop');}else if(hk==='barchin')sfx('b_place');else sfx('heromove');}S.fx.push({kind:'ring',x:c+.5,y:r+.5,r:.8,t:0,life:.4,col:'#ffd34d'});updHud();}else sfx('no');return;}
   const t=towerAt(c,r);if(t){sel={c,r,t};renderTower();sfx('sheet');return;}
-  if(S.hero&&S.hero.c===c&&S.hero.r===r){sel=null;renderHero();sfx('tap');return;}
+  if(S.hero&&S.hero.c===c&&S.hero.r===r){sel=null;/* v317: bir bosish = ko'chirish rejimi */if(!S.hero.dead&&!(S.hero.moveCd>0)){heroMode=true;hideSheet();sfx('tap');updHud();}else renderHero();return;}
   if(blocked.has(c+','+r)){sel=null;hideSheet();return;}
   if(sel&&!sel.t&&sel.c===c&&sel.r===r){sel=null;hideSheet();return;}
   sel={c,r};renderBuild();sfx('sheet');});
 $('bGo').onclick=()=>{unlock();startWave();};
 $('bHero').onclick=()=>{if(!S||S.state==='intro')return;unlock();if(!S.hero&&S.wave<3){banner('🗡️ Qahramonlar',"3-to'lqindan keyin keladi");sfx('no');return;}
-  if(S.hero){if(heroMode){heroMode=false;updHud();return;}sel=null;if(heroSheet){hideSheet();return;}renderHero();sfx('tap');return;}if(heroMode){heroMode=false;updHud();return;}sel=null;pickSel=null;if($('sheet').classList.contains('show')&&!heroSheet&&$('sheet').querySelector('.hcards')){hideSheet();return;}heroMode=true;hideSheet();banner('<img class="bp" src="'+HPOR(pendHero)+'">'+HEROES[pendHero].n+' qayerni qo\'riqlaydi?','Yo\'lakdagi sariq joyga bos');sfx('tap');updHud();};
+  if(S.hero){if(heroMode){heroMode=false;updHud();return;}sel=null;if(heroSheet){hideSheet();return;}renderHero();sfx('tap');return;}if(heroMode){heroMode=false;updHud();return;}sel=null;pickSel=null;if($('sheet').classList.contains('show')&&!heroSheet&&$('sheet').querySelector('.hcards')){hideSheet();return;}heroMode=true;hideSheet();sfx('tap');updHud();};
 $('bSpeed').onclick=()=>{speed=speed===1?2:speed===2?3:1;$('bSpeed').innerHTML='<img class="ico" src="img/ic-tezlik.png" alt="">x'+speed;sfx('tap');};
 try{const v=localStorage.getItem('qp_set');if(v){const o=JSON.parse(v);soundOn=o.s!==false;musicOn=o.m!==false;}}catch(e){}
 function setSave(){try{localStorage.setItem('qp_set',JSON.stringify({s:soundOn,m:musicOn}));}catch(e){}}
