@@ -954,6 +954,7 @@ i.cn{filter:none!important}
     <h1>Sozlamalar</h1>
     <button class="srow" id="sMus"><span>🎵 Musiqa</span><b></b></button>
     <button class="srow" id="sSfx"><span>🔊 Ovoz effektlari</span><b></b></button>
+    <button class="srow" id="sGfx"><span>⚡ Grafika</span><b></b></button>
     <button class="srow" id="sRestart"><span>🔄 Qaytadan boshlash</span></button>
     <button class="srow" id="sEdit"><span>✏️ Buyumlarni joylashtirish</span></button>
     <button class="srow" id="sHome"><span>🏠 Bosh menyu</span></button>
@@ -1222,10 +1223,11 @@ function newGame(){runClear();const D=DIFF[diff];document.body.classList.remove(
 
 // ---- Chizish ----
 const cv=document.getElementById('cv');let ctx=cv.getContext('2d');let CELL=40,DPR=1;let QCAP=9;try{QCAP=+localStorage.getItem('qp_q')||9;}catch(e){}
+/* v333: past grafika rejimi (kuchsiz telefonlar uchun): DPR=1 va shahar qismi 5 kadr/s da keshdan chiziladi */let GLOW=false,TWC=null,TWT=0;try{const g=localStorage.getItem('qp_gfx');GLOW=g==='low'||g==='alow';}catch(e){}
 function resize(){const st=document.getElementById('stage'),hd=document.getElementById('hud'),br=document.getElementById('bar');const w=st.clientWidth,h=st.clientHeight;
   hd.style.maxWidth=br.style.maxWidth=Math.min(w,560)+'px';const tH=hd.offsetHeight+2,bH=br.offsetHeight+2,base=ROWS+TOWN+TOP;
   const OV=.35;CELL=Math.floor(Math.min(w/COLS,(h-bH-tH)/(base-OV),(h-bH)/base));const left=Math.max(0,h-base*CELL);const xt=Math.min(left-bH,Math.max(tH-OV*CELL,(left-bH)*.4));XT=Math.max(0,xt)/CELL;XB=(left-Math.max(0,xt))/CELL;HUDB=tH;
-  DPR=Math.max(1,Math.min(window.devicePixelRatio||1,2,QCAP));const HH=Math.round((XT+base+XB)*CELL);const CW=Math.round(Math.max(COLS*CELL,Math.min(w,HH*.66)));XL=(CW-COLS*CELL)/2/CELL;
+  DPR=GLOW?1:Math.max(1,Math.min(window.devicePixelRatio||1,2,QCAP));const HH=Math.round((XT+base+XB)*CELL);const CW=Math.round(Math.max(COLS*CELL,Math.min(w,HH*.66)));XL=(CW-COLS*CELL)/2/CELL;
   cv.width=Math.round(CW*DPR);cv.height=Math.round(HH*DPR);cv.style.width=CW+'px';cv.style.height=HH+'px';ctx.setTransform(DPR,0,0,DPR,0,0);
   hd.style.maxWidth=br.style.maxWidth=Math.min(CW,560)+'px';if(br.offsetHeight+2>bH+4){XB+=0;}document.documentElement.style.setProperty('--barh',bH+'px');BARH=bH;}
 window.addEventListener('resize',resize);window.__geo=()=>({C:CELL,XL,XT,TOP});
@@ -1339,6 +1341,9 @@ function sideDunes(){const im=IMG['map-sidedune'];if(!im||mapKey==='qoqon'||mapK
   for(const sd of [-1,1]){ctx.save();ctx.beginPath();if(sd<0)ctx.rect(-XL*C-4,y0,w+4,y1-y0);else ctx.rect(W-C*.5,y0,w+4,y1-y0);ctx.clip();
     for(let y=y0-h*.12;y<y1;y+=h-.5){ctx.save();if(sd<0){ctx.translate(C*.5,0);ctx.scale(-1,1);ctx.drawImage(im,0,y,w*1.15,h);}else{ctx.drawImage(im,W-C*.5,y,w*1.15,h);}ctx.restore();}
     ctx.restore();}}
+function drawTownQ(now){if(!GLOW||EDIT){drawTown(now);return;}const C=CELL,W=COLS*C,x0=-(XL+.6)*C,x1=W+(XL+.6)*C,top=(ROWS-2.4)*C,bot=(ROWS+TOWN+XB+.6)*C,cw=Math.ceil(x1-x0),ch=Math.ceil(bot-top);
+  if(!TWC||TWC.width!==cw||TWC.height!==ch||TWC._k!==mapKey||now-TWT>200||now<TWT){if(!TWC||TWC.width!==cw||TWC.height!==ch){TWC=document.createElement('canvas');TWC.width=cw;TWC.height=ch;}TWC._k=mapKey;TWT=now;const old=ctx;ctx=TWC.getContext('2d');ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,cw,ch);ctx.setTransform(1,0,0,1,-x0,-top);try{drawTown(now);}finally{ctx=old;}}
+  ctx.drawImage(TWC,x0,top,cw,ch);}
 function drawTown(now){EDR=[];const C=CELL,y0=ROWS*C,W=COLS*C,H=TOWN*C,wy=y0-C*.1,wb=y0+C*.62,fyB=wb+C*.66,fyF=y0+H-C*.14;
   const panic=S&&S.panic>0;const pj=(v)=>panic?Math.sin(now/60+v)*C*.02:0;
   // maydon (shahar zamini)
@@ -1702,7 +1707,7 @@ function drawInner(now){const C=CELL;
   for(const s of S.shots){if(s.inv)continue;if(s.arrow&&IMG['fx-arrow-barchin']){const im=IMG['fx-arrow-barchin'];const w=C*.62,hh=w*im.height/im.width;ctx.save();ctx.translate(s.x*C,s.y*C);ctx.rotate(Math.atan2(s.ty-s.y,s.tx-s.x)+Math.PI);ctx.drawImage(im,-w*.15,-hh/2,w,hh);ctx.restore();continue;}if(s.img&&IMG[s.img]){const im=IMG[s.img];const dxp=s.tx-s.x,dyp=s.ty-s.y;const lf=dxp<0;const tl=Math.max(-.3,Math.min(.3,Math.atan2(dyp,Math.abs(dxp)+1e-3)));const ang=lf?-tl:Math.PI+tl;const Lm=C*(s.img.startsWith('fx-fire')?1.2:1.0);const L=Math.min(Lm,(s.trav+.35)*C);const H=Lm*im.height/im.width*(1+.08*Math.sin(now/45+s.trav*9));ctx.save();ctx.translate(s.x*C,s.y*C);ctx.rotate(ang);ctx.drawImage(im,-C*.14,-H/2,L,H);ctx.restore();continue;}{const SI=s.tp&&IMG['shot-'+s.tp];if(SI){const dxp=s.tx-s.x0,dyp=s.ty-(s.y0??s.y);const W0={kamon:.62,manjaniq:.46,muz:.62,qozon:.66,sehr:.52,zahar:.66,kalta:.74,bibi:.76}[s.tp]||.55;const w=C*W0,hh=w*SI.height/SI.width;let yy=s.y,sc=1;if(s.arc){const pr=s.trav/(s.trav+(s.rem||1));const h=Math.sin(pr*Math.PI)*.95;sc=1+h*.35;ctx.fillStyle='rgba(40,25,10,'+(.3-h*.15).toFixed(3)+')';ctx.beginPath();ctx.ellipse(s.x*C,s.y*C+C*.12,C*.13*(1-h*.3),C*.05,0,0,7);ctx.fill();yy=s.y-h;}const ang=Math.atan2(s.ty-s.y,s.tx-s.x);ctx.save();ctx.translate(s.x*C,yy*C);ctx.rotate(ang+Math.PI);if(Math.cos(ang)>0)ctx.scale(1,-1);ctx.drawImage(SI,-w*.3*sc,-hh/2*sc,w*sc,hh*sc);ctx.restore();continue;}}if(s.arc){const pr=s.trav/(s.trav+(s.rem||1));const h=Math.sin(pr*Math.PI)*.95;ctx.fillStyle='rgba(40,25,10,'+(.3-h*.15).toFixed(3)+')';ctx.beginPath();ctx.ellipse(s.x*C,s.y*C+C*.12,C*.13*(1-h*.3),C*.05,0,0,7);ctx.fill();spr(s.e,s.x*C,(s.y-h)*C,C*.3*(1+h*.35),{rot:s.rot});continue;}if(s.e==='➶'){ctx.save();ctx.translate(s.x*C,s.y*C);ctx.rotate(Math.atan2(s.ty-s.y,s.tx-s.x));ctx.strokeStyle=s.burn?'#ff6a00':'#4a3216';ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(-C*.18,0);ctx.lineTo(C*.12,0);ctx.stroke();ctx.restore();}
     else emoji(s.e,s.x*C,s.y*C,C*(s.big?.42:.28),false,1,s.rot);}
   ambDraw();
-  drawTown(now);
+  drawTownQ(now);
   emblem();
   for(const p of S.parts){const k=p.t/p.life;ctx.globalAlpha=Math.max(0,1-k);ctx.fillStyle=p.col;ctx.beginPath();ctx.arc(p.x*C,p.y*C,Math.max(.5,p.size*C*(1-k*.5)),0,7);ctx.fill();}ctx.globalAlpha=1;
   for(const f of S.fx){const a=1-f.t/f.life;if(f.kind==='pw'){pwDrawFx(f,C);continue;}
@@ -2178,13 +2183,14 @@ $('bHero').onclick=()=>{if(!S||S.state==='intro')return;unlock();if(!S.hero&&S.w
 $('bSpeed').onclick=()=>{speed=speed===1?2:speed===2?3:1;$('bSpeed').innerHTML='<img class="ico" src="img/ic-tezlik.png" alt="">x'+speed;sfx('tap');};
 try{const v=localStorage.getItem('qp_set');if(v){const o=JSON.parse(v);soundOn=o.s!==false;musicOn=o.m!==false;}}catch(e){}
 function setSave(){try{localStorage.setItem('qp_set',JSON.stringify({s:soundOn,m:musicOn}));}catch(e){}}
-function setRender(){for(const [id,on] of [['sMus',musicOn],['sSfx',soundOn]]){const b=$(id).querySelector('b');b.textContent=on?'Yoniq':"O'chiq";b.classList.toggle('off',!on);}}
+function setRender(){for(const [id,on] of [['sMus',musicOn],['sSfx',soundOn]]){const b=$(id).querySelector('b');b.textContent=on?'Yoniq':"O'chiq";b.classList.toggle('off',!on);}const g=$('sGfx')&&$('sGfx').querySelector('b');if(g){g.textContent=GLOW?'Past':'Yuqori';g.classList.toggle('off',GLOW);}}
 function setOpen(o){$('ovSet').classList.toggle('hide',!o);paused=o&&!!S;if(o){hideSheet();setRender();}}
 $('bSet').onclick=()=>{unlock();sfx('sheet');setOpen(true);};
 $('sClose').onclick=()=>{sfx('tap');setOpen(false);};
 $('ovSet').addEventListener('click',e=>{if(e.target.id==='ovSet')setOpen(false);});
 $('sMus').onclick=()=>{musicOn=!musicOn;setSave();setRender();musicSync();sfx('tap');};
 $('sSfx').onclick=()=>{soundOn=!soundOn;setSave();setRender();sfx('tap');};
+$('sGfx').onclick=()=>{GLOW=!GLOW;try{localStorage.setItem('qp_gfx',GLOW?'low':'high');}catch(e){}TWC=null;BG=null;SBG=null;resize();setRender();sfx('tap');};
 $('sRestart').onclick=()=>{sfx('tap');setOpen(false);startGame();};
 $('sHome').onclick=()=>{sfx('tap');setOpen(false);$('ovPw').classList.add('hide');$('ovMaster').classList.add('hide');paused=false;S=null;sel=null;heroMode=false;hideSheet();CAM.z=1;music('menu');$('ovStart').classList.remove('hide','help');showBest();updHud&&0;};
 document.querySelectorAll('#diff button').forEach(b=>b.onclick=()=>{diff=+b.dataset.d;document.querySelectorAll('#diff button').forEach(x=>x.classList.toggle('sel',x===b));sfx('tap');showBest();});
@@ -2463,7 +2469,7 @@ addEventListener('keydown',e=>{if(!EDIT)return;if(e.key==='+'||e.key==='=')edSca
 window.__ed=()=>({EDR,C:CELL,XL,TOP,XT,LAY,paused});
 $('sEdit').onclick=()=>{sfx('tap');if(!S||!DEV){return;}edToggle(true);};if(!DEV)$('sEdit').style.display='none';
 // sifat nazorati: telefon sekin bo'lsa tasvir aniqligini pasaytiradi, tez bo'lsa qaytaradi
-let QN=0,QS=0,QHI=0,QSKIP=3,QBAD=9,QSP=0;function qmon(ms){if(!S||paused||document.hidden||!(S.state==='wave'||S.state==='idle')||ms>300)return;QN++;QS+=ms;if(ms>45)QSP++;if(QN<60)return;const avg=QS/QN,spk=QSP;QN=QS=QSP=0;if(QSKIP>0){QSKIP--;return;}const mx=Math.min(window.devicePixelRatio||1,2);let nq=null;if((avg>24||spk>=5)&&DPR>1){QBAD=Math.min(QBAD,DPR);nq=Math.max(1,DPR-(avg>45?.5:.25));QHI=0;}else if(avg<18.5&&DPR<mx&&DPR+.25<QBAD){if(++QHI>=8){nq=Math.min(mx,DPR+.25);QHI=0;}}else QHI=0;if(nq!=null){QCAP=nq;try{localStorage.setItem('qp_q',String(nq));}catch(e){}resize();QSKIP=2;}}
+let QN=0,QS=0,QHI=0,QSKIP=3,QBAD=9,QSP=0;function qmon(ms){if(!S||paused||document.hidden||!(S.state==='wave'||S.state==='idle')||ms>300)return;QN++;QS+=ms;if(ms>45)QSP++;if(QN<60&&QS<2500)return;const avg=QS/QN,spk=QSP;QN=QS=QSP=0;if(QSKIP>0){QSKIP--;return;}const mx=Math.min(window.devicePixelRatio||1,2);let nq=null;if(!GLOW&&(avg>60||(DPR<=1&&avg>33))){let g=null;try{g=localStorage.getItem('qp_gfx');}catch(e){}if(g!=='high'){GLOW=true;try{localStorage.setItem('qp_gfx','alow');}catch(e){}TWC=null;BG=null;SBG=null;resize();QSKIP=2;return;}}if((avg>24||spk>=5)&&DPR>1){QBAD=Math.min(QBAD,DPR);nq=Math.max(1,DPR-(avg>45?.5:.25));QHI=0;}else if(avg<18.5&&DPR<mx&&DPR+.25<QBAD){if(++QHI>=8){nq=Math.min(mx,DPR+.25);QHI=0;}}else QHI=0;if(nq!=null){QCAP=nq;try{localStorage.setItem('qp_q',String(nq));}catch(e){}resize();QSKIP=2;}}
 function loop(now){sealTick();const dt=Math.min(.05,(now-last)/1000);qmon(now-last);last=now;if(!paused)for(let i=0;i<speed;i++)update(dt);if(!SVON())draw(now);requestAnimationFrame(loop);}
 resize();showBest();requestAnimationFrame(loop);
 // offline rejim: faqat o'z saytida (Netlify / ilova) ishlaydi
