@@ -11,14 +11,14 @@
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:#0d2a3e url(img/bg-day.jpg) center/cover no-repeat;font-family:"Trebuchet MS",system-ui,sans-serif;color:var(--ink);overflow:hidden;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 #app{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center}
-#hud{position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:4;box-sizing:border-box;width:100%;max-width:520px;display:flex;gap:6px;justify-content:space-between;padding:8px 10px 4px;padding-top:max(8px,env(safe-area-inset-top))}
+#hud{position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:4;box-sizing:border-box;width:100%;max-width:520px;display:flex;gap:6px;justify-content:space-between;padding:8px 10px 4px;padding-top:max(8px,env(safe-area-inset-top),var(--sat,0px))}
 .pill{background:var(--card);border:2px solid var(--gold);border-radius:999px;padding:5px 10px;font-weight:800;font-size:17px;display:flex;align-items:center;gap:5px;white-space:nowrap;box-shadow:0 3px 0 #0005}
 .pill.bump{animation:bump .3s}
 @keyframes bump{50%{transform:scale(1.18)}}
 #stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;width:100%;overflow:hidden}
 #cv{border:0;border-radius:0;box-shadow:none}
 /* v334: xarita alohida tiniq qatlamda (bgcv), o'yin qatlami (cv) ustida shaffof */#bgcv{position:absolute;left:0;top:0;border:0;border-radius:0;box-shadow:none;pointer-events:none;transform-origin:0 0;z-index:0}#cv{position:relative;z-index:1}
-canvas{display:block;border-radius:16px;border:3px solid var(--mcol,var(--gold));box-shadow:0 0 16px var(--mglow,transparent),0 8px 0 #0006;transition:border-color .5s,box-shadow .5s}
+canvas{display:block;border:0;border-radius:0;box-shadow:none}/* v335: menyudagi sariq ramka olib tashlandi */
 #bar .hero-btn{white-space:nowrap}
 #bSet{font-size:22px}.setbox{max-width:340px}.setbox h1{margin:0 0 10px}.srow{display:flex;justify-content:space-between;align-items:center;width:100%;margin:7px 0;padding:12px 14px;border-radius:14px;border:2px solid #d8bb84;background:#fffaf0;color:#4a2e14;font-size:17px;font-weight:800;box-shadow:0 3px 0 #c9a96a;font-family:inherit}.srow b{font-size:14px;padding:4px 10px;border-radius:999px;background:#3fae45;color:#fff}.srow b.off{background:#b9a27a}.srow:active{transform:translateY(2px);box-shadow:none}
 @media (max-width:370px){#bar{gap:5px;padding-left:6px;padding-right:6px}.hero-btn{font-size:12px;min-width:0;padding:6px 5px}.hero-btn img{height:22px!important}#bar .big{font-size:15px;padding:9px 4px}#bar .sm{min-width:40px}.master{padding:6px 5px}.master .pt{height:64px}.master .pt img{height:80px}}
