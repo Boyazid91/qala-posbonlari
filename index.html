@@ -9,6 +9,7 @@
 <style>
 :root{--ink:#2a1d0e;--card:#fbf3df;--line:#e2cf9f;--blue:#1d5f8a;--blue2:#123a55;--gold:#f2b632;--gold2:#c98a12;--good:#2e9d5a;--bad:#d9412b;--bg:#123a55}
 *{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}/* v336: tizim shrift o'lchami o'yin yozuvlarini kattalashtirmasin */
 html,body{margin:0;height:100%;background:#0d2a3e url(img/bg-day.jpg) center/cover no-repeat;font-family:"Trebuchet MS",system-ui,sans-serif;color:var(--ink);overflow:hidden;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 #app{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center}
 #hud{position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:4;box-sizing:border-box;width:100%;max-width:520px;display:flex;gap:6px;justify-content:space-between;padding:8px 10px 4px;padding-top:max(8px,env(safe-area-inset-top),var(--sat,0px))}
